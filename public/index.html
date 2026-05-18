@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Primary SEO -->
+<title>ShieldQA — Find Bugs Before Your Users Do</title>
+<meta name="description" content="Your site is breaking. You just don't see it yet. ShieldQA runs a full AI-powered audit — security, performance, SEO, accessibility, and more. Real issues. Real fixes. No guesswork.">
+<meta name="keywords" content="QA testing, website audit, SEO checker, security headers, accessibility testing, performance analysis, automated testing, AI QA agent">
+<meta name="author" content="ShieldQA">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://sheildqa.netlify.app/">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sheildqa.netlify.app/">
+<meta property="og:title" content="ShieldQA — Find Bugs Before Your Users Do">
+<meta property="og:description" content="Full QA audit on your live site in minutes. Security headers, SEO, accessibility, performance — real data, AI analysis, exact fixes. Built for startup teams.">
+<meta property="og:image" content="https://sheildqa.netlify.app/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="ShieldQA">
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://sheildqa.netlify.app/">
+<meta name="twitter:title" content="ShieldQA — Find Bugs Before Your Users Do">
+<meta name="twitter:description" content="Catch bugs before your users do. Full AI-powered QA audit — security, SEO, accessibility, performance. Exact fixes included.">
+<meta name="twitter:image" content="https://sheildqa.netlify.app/og-image.png">
+
+<!-- Favicon — inline SVG, no external file needed -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzBjMGMyMiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMxMDEwMmUiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InNoaWVsZCIgeDE9IjAiIHkxPSIwIiB4Mj0iMC41IiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0ZjhlZjciLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjOWI2ZGZmIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnbG93IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM3ZWIzZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjYzRhMGZmIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8IS0tIEJhY2tncm91bmQgcm91bmRlZCBzcXVhcmUgLS0+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTIiIGZpbGw9InVybCgjYmcpIi8+CiAgPCEtLSBTdWJ0bGUgYm9yZGVyIC0tPgogIDxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTEyIiBmaWxsPSJub25lIiBzdHJva2U9IiMyZTJlNWEiIHN0cm9rZS13aWR0aD0iMiIvPgogIDwhLS0gU2hpZWxkIGJvZHkgLS0+CiAgPHBhdGggZD0iTTI1NiA4OCBMMzc2IDE0MCBMMzc2IDI0OCBRMzc2IDMzNiAyNTYgMzkyIFExMzYgMzM2IDEzNiAyNDggTDEzNiAxNDAgWiIgZmlsbD0idXJsKCNzaGllbGQpIiBvcGFjaXR5PSIwLjk1Ii8+CiAgPCEtLSBTaGllbGQgaW5uZXIgaGlnaGxpZ2h0IC0tPgogIDxwYXRoIGQ9Ik0yNTYgMTEyIEwzNTYgMTU2IEwzNTYgMjQ4IFEzNTYgMzIwIDI1NiAzNjggUTE1NiAzMjAgMTU2IDI0OCBMMTU2IDE1NiBaIiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4xMikiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPCEtLSBTY2FuIGxpbmUgMSAoaG9yaXpvbnRhbCkgLS0+CiAgPGxpbmUgeDE9IjEzNiIgeTE9IjIzMCIgeDI9IjM3NiIgeTI9IjIzMCIgc3Ryb2tlPSIjN2ViM2ZmIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC4zNSIvPgogIDwhLS0gU2NhbiBsaW5lIDIgLS0+CiAgPGxpbmUgeDE9IjE1MiIgeTE9IjI2MiIgeDI9IjM2MCIgeTI9IjI2MiIgc3Ryb2tlPSIjOWI2ZGZmIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9IjAuMjUiLz4KICA8IS0tIFEgY2lyY2xlIC0tPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjIzOCIgcj0iNjIiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMTQiIG9wYWNpdHk9IjAuOTUiLz4KICA8IS0tIFEgdGFpbCAtLT4KICA8bGluZSB4MT0iMjk4IiB5MT0iMjc4IiB4Mj0iMzM0IiB5Mj0iMzE0IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjE0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuOTUiLz4KICA8IS0tIENvcm5lciBkb3RzIChyYWRhciBmZWVsKSAtLT4KICA8Y2lyY2xlIGN4PSIxODYiIGN5PSIxNjgiIHI9IjUiIGZpbGw9InJnYmEoMTI3LDE3OSwyNTUsMC41KSIvPgogIDxjaXJjbGUgY3g9IjMyNiIgY3k9IjE2OCIgcj0iNSIgZmlsbD0icmdiYSgxNTUsMTA5LDI1NSwwLjUpIi8+CiAgPCEtLSBCb3R0b20gcHVsc2UgYXJjIC0tPgogIDxwYXRoIGQ9Ik0yMDYgMzcwIFEyNTYgMzk4IDMwNiAzNzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNnbG93KSIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjQiLz4KPC9zdmc+">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzBjMGMyMiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMxMDEwMmUiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InNoaWVsZCIgeDE9IjAiIHkxPSIwIiB4Mj0iMC41IiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0ZjhlZjciLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjOWI2ZGZmIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnbG93IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM3ZWIzZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjYzRhMGZmIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8IS0tIEJhY2tncm91bmQgcm91bmRlZCBzcXVhcmUgLS0+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTIiIGZpbGw9InVybCgjYmcpIi8+CiAgPCEtLSBTdWJ0bGUgYm9yZGVyIC0tPgogIDxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTEyIiBmaWxsPSJub25lIiBzdHJva2U9IiMyZTJlNWEiIHN0cm9rZS13aWR0aD0iMiIvPgogIDwhLS0gU2hpZWxkIGJvZHkgLS0+CiAgPHBhdGggZD0iTTI1NiA4OCBMMzc2IDE0MCBMMzc2IDI0OCBRMzc2IDMzNiAyNTYgMzkyIFExMzYgMzM2IDEzNiAyNDggTDEzNiAxNDAgWiIgZmlsbD0idXJsKCNzaGllbGQpIiBvcGFjaXR5PSIwLjk1Ii8+CiAgPCEtLSBTaGllbGQgaW5uZXIgaGlnaGxpZ2h0IC0tPgogIDxwYXRoIGQ9Ik0yNTYgMTEyIEwzNTYgMTU2IEwzNTYgMjQ4IFEzNTYgMzIwIDI1NiAzNjggUTE1NiAzMjAgMTU2IDI0OCBMMTU2IDE1NiBaIiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4xMikiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPCEtLSBTY2FuIGxpbmUgMSAoaG9yaXpvbnRhbCkgLS0+CiAgPGxpbmUgeDE9IjEzNiIgeTE9IjIzMCIgeDI9IjM3NiIgeTI9IjIzMCIgc3Ryb2tlPSIjN2ViM2ZmIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC4zNSIvPgogIDwhLS0gU2NhbiBsaW5lIDIgLS0+CiAgPGxpbmUgeDE9IjE1MiIgeTE9IjI2MiIgeDI9IjM2MCIgeTI9IjI2MiIgc3Ryb2tlPSIjOWI2ZGZmIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9IjAuMjUiLz4KICA8IS0tIFEgY2lyY2xlIC0tPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjIzOCIgcj0iNjIiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMTQiIG9wYWNpdHk9IjAuOTUiLz4KICA8IS0tIFEgdGFpbCAtLT4KICA8bGluZSB4MT0iMjk4IiB5MT0iMjc4IiB4Mj0iMzM0IiB5Mj0iMzE0IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjE0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuOTUiLz4KICA8IS0tIENvcm5lciBkb3RzIChyYWRhciBmZWVsKSAtLT4KICA8Y2lyY2xlIGN4PSIxODYiIGN5PSIxNjgiIHI9IjUiIGZpbGw9InJnYmEoMTI3LDE3OSwyNTUsMC41KSIvPgogIDxjaXJjbGUgY3g9IjMyNiIgY3k9IjE2OCIgcj0iNSIgZmlsbD0icmdiYSgxNTUsMTA5LDI1NSwwLjUpIi8+CiAgPCEtLSBCb3R0b20gcHVsc2UgYXJjIC0tPgogIDxwYXRoIGQ9Ik0yMDYgMzcwIFEyNTYgMzk4IDMwNiAzNzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNnbG93KSIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjQiLz4KPC9zdmc+">
+
+<!-- Theme -->
+<meta name="theme-color" content="#080818">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ShieldQA">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+
+<!-- Schema.org structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ShieldQA",
+  "url": "https://sheildqa.netlify.app/",
+  "description": "Autonomous AI QA agent that performs real HTTP fetches and deep analysis of websites — SEO, security headers, accessibility, performance, mobile UX and more.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "featureList": [
+    "Real HTTP site fetching",
+    "AI-powered bug analysis",
+    "SEO audit",
+    "Security headers check",
+    "Accessibility testing",
+    "Performance analysis",
+    "Mobile UX testing",
+    "24/7 continuous monitoring",
+    "Fix prompt generation"
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+
+<!-- Netlify Identity — accounts + per-user storage, no database to run -->
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg0:#05050f; --bg1:#080818; --bg2:#0c0c22; --bg3:#10102e;
+    --border:#1c1c3a; --border-hi:#2e2e5a;
+    --blue:#4f8ef7; --blue-light:#7eb3ff;
+    --violet:#9b6dff; --violet-light:#c4a0ff;
+    --indigo:#6e7fff;
+    --text-primary:#dde2ff; --text-second:#8890cc; --text-dim:#3a3a6a;
+    --mono:'DM Mono',monospace; --syne:'Syne',sans-serif;
+  }
+  html,body{min-height:100%;background:var(--bg1);color:var(--text-primary);font-family:var(--mono);overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  *{-webkit-tap-highlight-color:transparent}
+  input,button,select,textarea{-webkit-appearance:none;appearance:none;border-radius:0}
+  button{touch-action:manipulation}
+  ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:var(--bg0)}::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:2px}
+  @keyframes ping{0%,100%{transform:scale(1);opacity:.35}50%{transform:scale(2.4);opacity:0}}
+  @keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+  @keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+  @keyframes orb1{0%,100%{transform:translate(0,0)}33%{transform:translate(50px,-40px)}66%{transform:translate(-30px,30px)}}
+  @keyframes orb2{0%,100%{transform:translate(0,0)}33%{transform:translate(-40px,50px)}66%{transform:translate(40px,-30px)}}
+  @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+  #orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .orb{position:absolute;border-radius:50%}
+  .orb1{width:700px;height:700px;background:radial-gradient(circle,#4f8ef718 0%,transparent 70%);top:-250px;left:-150px;animation:orb1 20s ease-in-out infinite}
+  .orb2{width:600px;height:600px;background:radial-gradient(circle,#9b6dff14 0%,transparent 70%);bottom:-150px;right:-150px;animation:orb2 25s ease-in-out infinite}
+  .orb3{width:400px;height:400px;background:radial-gradient(circle,#6e7fff0e 0%,transparent 70%);top:35%;left:45%;animation:orb1 16s ease-in-out infinite reverse}
+  #header{position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border);background:rgba(5,5,15,.92);backdrop-filter:blur(20px);padding:0 24px;padding-left:max(24px,env(safe-area-inset-left));padding-right:max(24px,env(safe-area-inset-right))}
+  #header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:58px}
+  .logo-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#4f8ef7,#9b6dff);display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 0 20px #4f8ef755;flex-shrink:0}
+  .logo-name{font-family:var(--syne);font-weight:800;font-size:16px;background:linear-gradient(90deg,#7eb3ff,#c4a0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.02em}
+  .logo-sub{font-size:9px;color:var(--text-dim);letter-spacing:.12em}
+  #header-right{display:flex;align-items:center;gap:20px;font-size:11px}
+  .grad-text{background:linear-gradient(90deg,#7eb3ff,#c4a0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-block}
+  .pdot{position:relative;display:inline-block;flex-shrink:0}
+  .pdot-ring{position:absolute;inset:0;border-radius:50%;opacity:.35;animation:ping 1.6s cubic-bezier(0,0,.2,1) infinite}
+  .pdot-core{position:absolute;inset:0;border-radius:50%}
+  #main{max-width:1200px;margin:0 auto;padding:0 20px;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));position:relative;z-index:1}
+  #hero{text-align:center;padding:50px 16px 48px;animation:fadeIn .6s ease}
+  .hero-badge{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:20px;margin-bottom:28px;border:1px solid rgba(79,142,247,.22);background:linear-gradient(135deg,rgba(79,142,247,.07),rgba(155,109,255,.07));font-size:11px;letter-spacing:.08em;white-space:nowrap;max-width:calc(100vw - 40px);overflow:hidden;text-overflow:ellipsis}
+  #hero h1{font-family:var(--syne);font-weight:800;font-size:clamp(26px,7vw,54px);line-height:1.1;letter-spacing:-.03em;margin-bottom:16px}
+  #hero h1 .line1{color:var(--text-primary);display:block}
+  #hero h1 .line2{background:linear-gradient(90deg,#4f8ef7,#9b6dff,#7eb3ff);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;-webkit-text-stroke:0px;animation:shimmer 4s linear infinite;display:block}
+  #hero p{color:var(--text-second);font-size:13px;max-width:480px;margin:0 auto 36px;line-height:1.7}
+  #mode-selector{display:flex;justify-content:center;gap:10px;margin-bottom:28px;flex-wrap:wrap}
+  .mode-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 18px;border-radius:12px;border:1px solid var(--border);background:var(--bg2);cursor:pointer;transition:all .2s;min-width:90px;touch-action:manipulation}
+  .mode-btn:hover{border-color:var(--border-hi)}
+  .mode-btn.active{border-color:rgba(79,142,247,.5);background:linear-gradient(135deg,rgba(79,142,247,.12),rgba(155,109,255,.12));box-shadow:0 0 20px rgba(79,142,247,.15)}
+  .mode-btn .mode-icon{font-size:20px}
+  .mode-btn .mode-label{font-size:11px;color:var(--text-second);letter-spacing:.04em}
+  .mode-btn.active .mode-label{color:var(--blue-light)}
+  #url-wrapper{max-width:600px;margin:0 auto;position:relative}
+  #url-border{position:absolute;inset:-1px;border-radius:15px;background:linear-gradient(135deg,rgba(79,142,247,.4),rgba(155,109,255,.4));pointer-events:none;z-index:0}
+  #url-inner{position:relative;z-index:1;display:flex;background:var(--bg2);border-radius:14px;padding:5px}
+  #url-input{flex:1;background:transparent;border:none;outline:none;color:var(--text-primary);font-size:16px;padding:12px 12px;font-family:var(--mono);min-width:0}
+  #url-input::placeholder{color:var(--text-dim)}
+  #run-btn{background:linear-gradient(135deg,#4f8ef7,#9b6dff);color:#fff;border:none;border-radius:10px;padding:12px 18px;font-size:13px;font-family:var(--mono);font-weight:500;cursor:pointer;letter-spacing:.04em;box-shadow:0 0 20px rgba(79,142,247,.25);transition:box-shadow .2s,transform .15s;white-space:nowrap;flex-shrink:0;touch-action:manipulation}
+  #run-btn:hover{box-shadow:0 0 32px rgba(79,142,247,.45);transform:translateY(-1px)}
+  #run-btn:active{transform:translateY(0)}
+  .feature-pills{display:flex;justify-content:center;gap:8px;margin-top:36px;flex-wrap:wrap}
+  .pill{display:flex;align-items:center;gap:6px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:11px;color:var(--text-second)}
+  #dashboard{padding-top:20px;animation:fadeIn .3s ease}
+  #status-bar{display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 20px;margin-bottom:12px;flex-wrap:wrap;gap:12px}
+  #status-left,#status-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}#done-btn,#rescan-btn{padding:5px 12px;font-size:10px}#status-url{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .status-label{color:var(--text-dim);font-size:11px;letter-spacing:.06em}
+  .run-label{color:var(--text-dim);font-size:11px}
+  .mode-badge{font-size:10px;padding:2px 10px;border-radius:4px;border:1px solid rgba(79,142,247,.3);background:rgba(79,142,247,.1);color:var(--blue-light);letter-spacing:.06em}
+  #rescan-btn{background:transparent;border:1px solid var(--border-hi);color:var(--text-second);border-radius:7px;padding:5px 14px;font-size:11px;font-family:var(--mono);cursor:pointer;transition:all .2s}
+  #rescan-btn:hover{border-color:var(--blue);color:var(--blue-light)}
+  #done-btn{background:transparent;border:1px solid rgba(155,109,255,.35);color:#c4a0ff;border-radius:7px;padding:5px 14px;font-size:11px;font-family:var(--mono);cursor:pointer;transition:all .2s}
+  #done-btn:hover{background:rgba(155,109,255,.12);border-color:rgba(155,109,255,.6)}
+  #fetch-status{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;margin-bottom:12px;display:none;animation:fadeIn .3s ease;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  #fetch-status-inner{display:flex;gap:20px;flex-wrap:wrap}
+  .fstat{display:flex;flex-direction:column;gap:1px}
+  .fstat-label{font-size:9px;color:var(--text-dim);letter-spacing:.1em}
+  .fstat-value{font-size:12px}
+  #metrics{display:grid;grid-template-columns:auto 1fr 1fr 1fr 1fr 1fr;gap:10px;margin-bottom:16px;animation:fadeIn .5s ease}
+  .metric-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;position:relative;overflow:hidden}
+  .metric-card .bar{position:absolute;top:0;right:0;bottom:0;width:3px;background:linear-gradient(180deg,#4f8ef7,#9b6dff);border-radius:0 12px 12px 0}
+  .metric-label{font-size:10px;color:var(--text-dim);letter-spacing:.1em;margin-bottom:5px}
+  .metric-value{font-size:22px;font-weight:700;font-family:var(--syne)}
+  #score-card{display:flex;align-items:center;justify-content:center}
+  #tabs{display:flex;gap:2px;margin-bottom:16px;background:var(--bg0);border-radius:10px;padding:4px;width:100%;border:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;white-space:nowrap}
+  .tab-btn{background:transparent;border:1px solid transparent;color:var(--text-dim);border-radius:7px;padding:6px 14px;font-size:11px;font-family:var(--mono);cursor:pointer;transition:all .15s;flex-shrink:0;touch-action:manipulation}
+  .tab-btn.active{background:linear-gradient(135deg,rgba(79,142,247,.15),rgba(155,109,255,.15));border-color:rgba(79,142,247,.25);color:var(--blue-light)}
+  .tab-panel{display:none}
+  .tab-panel.active{display:block;animation:fadeIn .25s ease}
+  #tasks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+  .task-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;position:relative;overflow:hidden;transition:border-color .4s,box-shadow .4s}
+  .task-card.running{border-color:rgba(79,142,247,.19);box-shadow:0 0 24px rgba(79,142,247,.09)}
+  .task-scan-bar{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#4f8ef7,#9b6dff,transparent);animation:scan 1.8s linear infinite}
+  .task-corner{position:absolute;top:0;right:0;width:70px;height:70px;pointer-events:none}
+  .task-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+  .task-title{display:flex;align-items:center;gap:8px}
+  .task-icon{font-size:15px}
+  .task-name{color:var(--text-primary);font-size:12px;font-weight:500}
+  .task-meta{display:flex;align-items:center;gap:6px}
+  .task-score{font-size:10px;padding:2px 7px;border-radius:4px;border-width:1px;border-style:solid}
+  .task-status-txt{font-size:10px;letter-spacing:.06em}
+  .subtask-pills{display:flex;gap:4px;flex-wrap:wrap}
+  .subtask-pill{font-size:9px;color:var(--text-dim);background:var(--bg3);padding:2px 7px;border-radius:4px;border:1px solid var(--border);transition:all .3s}
+  .subtask-pill.active{color:var(--blue);background:rgba(79,142,247,.08);border-color:rgba(79,142,247,.25)}
+  .subtask-pill.done{color:#9b6dff;border-color:rgba(155,109,255,.19)}
+  .task-checking{color:var(--blue);font-size:10px;opacity:.7;margin-top:6px}
+  .task-summary{color:var(--text-second);font-size:10px;margin:0 0 6px;line-height:1.5}
+  .task-issues{display:flex;flex-direction:column;gap:3px}
+  .task-issue{border-radius:5px;padding:4px 8px;display:flex;gap:7px;align-items:flex-start;border-width:1px;border-style:solid}
+  .issue-badge{font-size:9px;flex-shrink:0;margin-top:1px;letter-spacing:.04em}
+  .issue-title-sm{color:#cccce8;font-size:10px;line-height:1.4}
+  .no-issues{color:#5bdfb0;font-size:10px}
+  #issues-list{display:flex;flex-direction:column;gap:8px}
+  #issues-empty{font-size:13px;text-align:center;padding:50px}
+  .issue-row{border-radius:10px;overflow:hidden;border-width:1px;border-style:solid;border-color:var(--border);transition:border-color .25s,box-shadow .25s;cursor:pointer}
+  .issue-row-head{display:flex;align-items:center;gap:12px;padding:12px 16px}
+  .issue-sev-badge{font-size:10px;padding:2px 9px;border-radius:4px;flex-shrink:0;letter-spacing:.06em;border-width:1px;border-style:solid}
+  .issue-row-title{flex:1;font-size:13px;color:var(--text-primary);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .issue-row-cat{font-size:10px;color:var(--text-dim)}
+  .issue-row-arrow{font-size:11px;color:var(--text-dim)}
+  .issue-row-body{display:none;background:var(--bg0);padding:14px 16px;border-top:1px solid var(--border)}
+  .issue-row-body.open{display:block;animation:slideDown .2s ease}
+  .issue-section{margin-bottom:12px}
+  .issue-section-label{font-size:10px;letter-spacing:.1em;margin-bottom:5px}
+  .issue-section-text{font-size:12px;line-height:1.65}
+  #logs-box{background:var(--bg0);border:1px solid var(--border);border-radius:12px;padding:16px;height:420px;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:2px}
+  #logs-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+  #logs-head span{font-size:10px;color:var(--text-dim);letter-spacing:.08em}
+  .log-line{display:flex;gap:10px;font-size:11px;line-height:1.65;animation:fadeIn .2s ease}
+  .log-time{color:var(--text-dim);flex-shrink:0}
+  .log-type{flex-shrink:0}
+  .log-msg{color:var(--text-second);word-break:break-word}
+  #raw-box{background:var(--bg0);border:1px solid var(--border);border-radius:12px;padding:14px;max-height:480px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .raw-section{margin-bottom:20px}
+  .raw-section-title{font-size:10px;color:var(--text-dim);letter-spacing:.1em;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+  .raw-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px solid #1a1a2a;font-size:11px;gap:10px;flex-wrap:wrap}
+  .raw-row:last-child{border-bottom:none}
+  .raw-key{color:var(--text-second);flex-shrink:0;min-width:140px;max-width:55%}
+  .raw-val{color:var(--text-primary);text-align:right;word-break:break-all}
+  .raw-val.good{color:#5bdfb0}.raw-val.bad{color:#ff5b7f}.raw-val.warn{color:#f5d442}
+  .finding-item{padding:8px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);margin-bottom:6px;font-size:11px;line-height:1.6}
+  .finding-pass{border-color:#5bdfb030;background:rgba(5,26,20,.25)}
+  .finding-fail{border-color:#ff5b7f30;background:rgba(30,6,21,.25)}
+  #report-content{display:flex;flex-direction:column;gap:14px;animation:fadeIn .4s ease}
+  #report-placeholder{color:var(--text-dim);font-size:13px;text-align:center;padding:50px}
+  .report-card{background:var(--bg2);border-radius:14px;padding:20px 24px;border:1px solid var(--border);position:relative;overflow:hidden}
+  .report-card-bar{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#4f8ef7,#9b6dff)}
+  .report-label{font-size:10px;color:var(--text-dim);letter-spacing:.1em;margin-bottom:10px}
+  .report-headline{font-size:16px;font-family:var(--syne);font-weight:600;line-height:1.5;margin-bottom:12px;background:linear-gradient(90deg,#7eb3ff,#c4a0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .report-rec{font-size:12px;color:var(--text-second);line-height:1.7}
+  .priority-card{background:#140510;border:1px solid rgba(255,91,127,.19);border-radius:14px;padding:16px 20px;display:flex;gap:14px;align-items:flex-start}
+  .priority-icon{font-size:20px;flex-shrink:0}
+  .priority-label{font-size:10px;color:#ff5b7f;letter-spacing:.1em;margin-bottom:6px}
+  .priority-text{font-size:13px;color:#e8b0c0;line-height:1.65}
+  .positives-card{background:linear-gradient(135deg,rgba(79,142,247,.03),rgba(155,109,255,.03));border:1px solid rgba(79,142,247,.15);border-radius:14px;padding:16px 20px}
+  .positives-label{font-size:10px;color:var(--blue);letter-spacing:.1em;margin-bottom:10px}
+  .positive-item{display:flex;gap:10px;margin-bottom:8px;font-size:12px;color:var(--text-second);line-height:1.55}
+  .positive-check{background:linear-gradient(90deg,#7eb3ff,#c4a0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;flex-shrink:0}
+  .breakdown-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px 20px}
+  .breakdown-label{font-size:10px;color:var(--text-dim);letter-spacing:.1em;margin-bottom:14px}
+  .breakdown-grid{display:flex;gap:12px;flex-wrap:wrap}
+  .breakdown-item{border-radius:10px;padding:12px 18px;min-width:80px;text-align:center;border-width:1px;border-style:solid}
+  .breakdown-num{font-size:20px;font-weight:700;font-family:var(--syne)}
+  .breakdown-name{font-size:10px;opacity:.65;letter-spacing:.06em;margin-top:2px}
+  .timer-card{border-radius:12px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border:1px solid var(--border-hi);background:linear-gradient(135deg,rgba(79,142,247,.06),rgba(155,109,255,.06))}
+  .timer-left{display:flex;align-items:center;gap:10px}
+  .timer-label{font-size:12px;color:var(--text-second)}
+  .timer-value{font-size:22px;font-family:var(--syne);font-weight:700;background:linear-gradient(90deg,#7eb3ff,#c4a0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-block}
+
+  /* FIX PROMPTS */
+  #fix-content{display:flex;flex-direction:column;gap:16px;animation:fadeIn .4s ease}
+  .fix-header{background:linear-gradient(135deg,rgba(79,142,247,.08),rgba(155,109,255,.08));border:1px solid rgba(155,109,255,.25);border-radius:14px;padding:20px 24px;position:relative;overflow:hidden}
+  .fix-header-bar{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#4f8ef7,#9b6dff,#c4a0ff)}
+  .fix-header-title{font-family:var(--syne);font-weight:700;font-size:15px;background:linear-gradient(90deg,#7eb3ff,#c4a0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
+  .fix-header-sub{font-size:11px;color:var(--text-second);line-height:1.6}
+  .fix-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:700px){.fix-cards{grid-template-columns:1fr}}
+  .fix-card{border-radius:14px;border:1px solid var(--border);overflow:hidden}
+  .fix-card-claude{border-color:rgba(155,109,255,.3)}
+  .fix-card-gpt{border-color:rgba(16,163,127,.3)}
+  .fix-card-head{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .fix-card-claude .fix-card-head{background:linear-gradient(135deg,rgba(155,109,255,.1),rgba(79,142,247,.1))}
+  .fix-card-gpt .fix-card-head{background:linear-gradient(135deg,rgba(16,163,127,.1),rgba(16,163,127,.05))}
+  .fix-card-label{display:flex;align-items:center;gap:10px}
+  .fix-card-logo{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+  .fix-card-claude .fix-card-logo{background:rgba(155,109,255,.2);color:#c4a0ff}
+  .fix-card-gpt .fix-card-logo{background:rgba(16,163,127,.2);color:#10a37f}
+  .fix-card-name{font-family:var(--syne);font-weight:700;font-size:13px}
+  .fix-card-claude .fix-card-name{color:#c4a0ff}
+  .fix-card-gpt .fix-card-name{color:#10a37f}
+  .fix-card-desc{font-size:10px;color:var(--text-dim);margin-top:2px}
+  .fix-copy-btn{font-size:11px;font-family:var(--mono);padding:6px 14px;border-radius:7px;border:none;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0}
+  .fix-card-claude .fix-copy-btn{background:rgba(155,109,255,.2);color:#c4a0ff;border:1px solid rgba(155,109,255,.3)}
+  .fix-card-claude .fix-copy-btn:hover{background:rgba(155,109,255,.35)}
+  .fix-card-gpt .fix-copy-btn{background:rgba(16,163,127,.2);color:#10a37f;border:1px solid rgba(16,163,127,.3)}
+  .fix-card-gpt .fix-copy-btn:hover{background:rgba(16,163,127,.35)}
+  .fix-copy-btn.copied{opacity:.6}
+  .fix-prompt-box{padding:14px 16px;background:var(--bg0);max-height:240px;overflow-y:auto;-webkit-overflow-scrolling:touch;font-size:11px;color:var(--text-second);line-height:1.7;white-space:pre-wrap;word-break:break-word;border-top:1px solid var(--border)}
+  .fix-open-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:var(--bg2);font-size:11px;font-family:var(--mono);cursor:pointer;transition:all .2s;border-top:1px solid var(--border);border:none;width:100%;color:var(--text-second)}
+  .fix-card-claude .fix-open-btn:hover{background:rgba(155,109,255,.08);color:#c4a0ff}
+  .fix-card-gpt .fix-open-btn:hover{background:rgba(16,163,127,.08);color:#10a37f}
+  .fix-generating{display:flex;align-items:center;justify-content:center;gap:12px;padding:40px;color:var(--text-second);font-size:12px}
+  .fix-issue-summary{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 18px}
+  .fix-issue-summary-title{font-size:10px;color:var(--text-dim);letter-spacing:.1em;margin-bottom:10px}
+  .fix-issue-row{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11px;border-bottom:1px solid #1a1a2a}
+  .fix-issue-row:last-child{border-bottom:none}
+
+  @media(max-width:600px){
+    #hero{padding:32px 16px 36px}
+    #hero h1{font-size:clamp(24px,8.5vw,38px);line-height:1.12;margin-bottom:12px}
+    #hero h1 .line1{display:block;margin-bottom:2px}
+    #hero h1 .line2{display:block}
+    #hero p{font-size:12px;margin-bottom:24px;line-height:1.6;max-width:100%}
+    .hero-badge{font-size:10px;padding:4px 12px;margin-bottom:20px}
+    #mode-selector{gap:8px}
+    .mode-btn{min-width:80px;padding:9px 12px}
+    .mode-btn .mode-icon{font-size:18px}
+    .mode-btn .mode-label{font-size:10px}
+    #url-inner{flex-direction:column;gap:6px;padding:8px}
+    #url-input{width:100%;padding:12px 14px;border-radius:8px;border:1px solid var(--border-hi);background:var(--bg3)}
+    #run-btn{width:100%;justify-content:center;padding:13px;border-radius:8px;font-size:14px}
+    #url-border{display:none}
+    .feature-pills{gap:5px}
+    .pill{font-size:10px;padding:4px 9px}
+    .pill:nth-child(n+6){display:none}
+    #status-bar{padding:10px 14px}
+    #status-url{max-width:140px}
+    .run-label{display:none}
+    #metrics{grid-template-columns:1fr 1fr;gap:8px}
+    #score-card{grid-column:1/-1;padding:14px;justify-content:center}
+    .metric-value{font-size:18px}
+    .metric-label{font-size:9px}
+    #tasks-grid{grid-template-columns:1fr}
+    .task-card{padding:12px}
+    .fix-cards{grid-template-columns:1fr}
+    .fix-card-head{flex-direction:column;align-items:flex-start;gap:10px}
+    .fix-copy-btn{width:100%;justify-content:center;text-align:center}
+    .fix-open-btn{font-size:12px;padding:14px}
+    .fix-header{padding:16px}
+    .breakdown-grid{gap:8px}
+    .breakdown-item{min-width:70px;padding:10px 14px}
+    .report-card{padding:16px}
+    .issue-row-head{gap:8px;padding:10px 12px}
+    .issue-sev-badge{font-size:9px;padding:2px 7px}
+    .issue-row-title{font-size:12px}
+    #tabs{border-radius:8px}
+    .tab-btn{padding:6px 10px;font-size:10px}
+    .priority-card{padding:14px}
+    .timer-card{padding:12px 16px}
+    .timer-value{font-size:18px}
+    .raw-section-title{font-size:9px}
+    .raw-key{min-width:120px;font-size:10px}
+    .raw-val{font-size:10px}
+    #header-inner{height:52px}
+    .logo-name{font-size:14px}
+    #header-right{gap:12px;font-size:10px}
+  }
+  @media(max-width:380px){
+    #hero h1{font-size:clamp(22px,9vw,32px)}
+    .mode-btn{min-width:72px;padding:8px 10px}
+    .tab-btn{padding:5px 8px;font-size:9px}
+    #metrics{grid-template-columns:1fr 1fr}
+    #status-mode-badge{display:none}
+    .issue-row-title{white-space:normal;font-size:11px}
+    .fix-card-logo{width:24px;height:24px;font-size:12px}
+    .mode-btn{min-width:72px;padding:8px 10px}
+    .tab-btn{padding:5px 8px;font-size:9px}
+    .breakdown-item{min-width:60px;padding:8px 10px}
+  }
+  #error-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e0615;border:1px solid #ff5b7f40;color:#ff9bb8;padding:12px 24px;border-radius:10px;font-size:12px;z-index:999;display:none;animation:fadeIn .3s ease;max-width:500px;text-align:center}
+  /* ── Account / auth UI ── */
+  .acct-menu{position:relative}
+  .acct-btn{display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:8px;border:1px solid var(--border-hi);background:linear-gradient(135deg,rgba(79,142,247,.1),rgba(155,109,255,.1));color:var(--text-primary);font-family:var(--mono);font-size:11px;cursor:pointer;transition:.18s;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}
+  .acct-btn:hover{border-color:var(--blue);box-shadow:0 0 14px rgba(79,142,247,.25)}
+  .acct-pop{position:absolute;top:calc(100% + 8px);right:0;min-width:184px;background:var(--bg2);border:1px solid var(--border-hi);border-radius:10px;padding:6px;z-index:200;box-shadow:0 12px 40px rgba(0,0,0,.55);animation:slideDown .18s ease}
+  .acct-pop .acct-pop-head{padding:6px 10px;font-size:9px;color:var(--text-dim);letter-spacing:.1em}
+  .acct-pop button{display:block;width:100%;text-align:left;padding:8px 10px;background:none;border:none;color:var(--text-second);font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:6px}
+  .acct-pop button:hover{background:var(--bg3);color:var(--text-primary)}
+  /* ── Recent scans (hero) ── */
+  #recent-scans{max-width:560px;margin:30px auto 0;text-align:left}
+  .rs-title{font-size:10px;letter-spacing:.12em;color:var(--text-dim);margin-bottom:10px;text-transform:uppercase}
+  .rs-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg2);margin-bottom:6px;cursor:pointer;transition:.16s}
+  .rs-item:hover{border-color:var(--border-hi);background:var(--bg3)}
+  .rs-url{flex:1;font-size:11px;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rs-score{font-size:11px;font-weight:500;padding:2px 8px;border-radius:5px;flex-shrink:0}
+  .rs-date{font-size:9px;color:var(--text-dim);flex-shrink:0}
+  /* ── Ensemble model badge ── */
+  .model-badge{font-size:8px;letter-spacing:.06em;padding:1px 6px;border-radius:4px;border:1px solid;flex-shrink:0}
+  .hidden{display:none !important}
+</style>
+</head>
+<body>
+<div id="orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+<div id="header">
+  <div id="header-inner">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="logo-mark" style="padding:0;overflow:hidden;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="34" height="34" style="display:block;">
+          <defs>
+            <linearGradient id="lbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0c0c22"/><stop offset="100%" stop-color="#10102e"/></linearGradient>
+            <linearGradient id="lsh" x1="0" y1="0" x2="0.5" y2="1"><stop offset="0%" stop-color="#4f8ef7"/><stop offset="100%" stop-color="#9b6dff"/></linearGradient>
+          </defs>
+          <rect width="512" height="512" rx="112" fill="url(#lbg)"/>
+          <path d="M256 88 L376 140 L376 248 Q376 336 256 392 Q136 336 136 248 L136 140 Z" fill="url(#lsh)" opacity="0.95"/>
+          <circle cx="256" cy="238" r="62" fill="none" stroke="white" stroke-width="14" opacity="0.95"/>
+          <line x1="298" y1="278" x2="334" y2="314" stroke="white" stroke-width="14" stroke-linecap="round" opacity="0.95"/>
+          <line x1="136" y1="230" x2="376" y2="230" stroke="#7eb3ff" stroke-width="2" opacity="0.3"/>
+        </svg>
+      </div>
+      <div><div class="logo-name">ShieldQA</div><div class="logo-sub">AUTONOMOUS QA AGENT</div></div>
+    </div>
+    <div id="header-right">
+      <div id="header-status" class="hidden" style="display:flex;align-items:center;gap:7px;">
+        <span class="pdot" id="header-dot" style="width:7px;height:7px;"><span class="pdot-ring" style="background:#4f8ef7;"></span><span class="pdot-core" style="background:#4f8ef7;"></span></span>
+        <span id="header-status-text" style="color:var(--text-dim);">scanning</span>
+      </div>
+      <div id="header-timer" class="hidden" style="display:flex;align-items:center;gap:7px;">
+        <span style="color:var(--text-dim);">next</span>
+        <span id="header-timer-val" class="grad-text" style="font-weight:500;"></span>
+      </div>
+      <div id="account" class="acct-menu"></div>
+    </div>
+  </div>
+</div>
+<div id="main">
+  <div id="hero">
+    <div class="hero-badge">
+      <span class="pdot" style="width:6px;height:6px;"><span class="pdot-ring" style="background:#9b6dff;"></span><span class="pdot-core" style="background:#9b6dff;"></span></span>
+      <span class="grad-text">AUTOMATED QA · CLAUDE + CHATGPT · ALWAYS ON</span>
+    </div>
+    <h1><span class="line1">Your site is breaking.</span><span class="line2">You just don't see it yet.</span></h1>
+    <p>We find the bugs before your users do. ShieldQA runs a full AI-powered audit on your live site — security, performance, SEO, accessibility, and more. Real issues. Real fixes. No guesswork.</p>
+    <div id="mode-selector">
+      <div class="mode-btn active" data-mode="both"><span class="mode-icon">⚡</span><span class="mode-label">FULL SCAN</span></div>
+      <div class="mode-btn" data-mode="frontend"><span class="mode-icon">🖥️</span><span class="mode-label">FRONTEND</span></div>
+      <div class="mode-btn" data-mode="backend"><span class="mode-icon">⚙️</span><span class="mode-label">BACKEND</span></div>
+    </div>
+    <div id="url-wrapper">
+      <div id="url-border"></div>
+      <div id="url-inner">
+        <input id="url-input" type="text" placeholder="https://yourapp.com" autocomplete="off" spellcheck="false">
+        <button id="run-btn">Run Agent →</button>
+      </div>
+    </div>
+    <div class="feature-pills">
+      <div class="pill"><span>🌐</span><span>Real HTTP fetch</span></div>
+      <div class="pill"><span>🔍</span><span>SEO</span></div>
+      <div class="pill"><span>♿</span><span>Accessibility</span></div>
+      <div class="pill"><span>🛡️</span><span>Security</span></div>
+      <div class="pill"><span>📱</span><span>Mobile</span></div>
+      <div class="pill"><span>⚡</span><span>Performance</span></div>
+      <div class="pill"><span>📊</span><span>Static analysis</span></div>
+    </div>
+    <div id="recent-scans" class="hidden"></div>
+  </div>
+
+  <div id="dashboard" class="hidden">
+    <div id="status-bar">
+      <div id="status-left">
+        <span class="pdot" id="status-dot" style="width:8px;height:8px;"><span class="pdot-ring" style="background:#4f8ef7;"></span><span class="pdot-core" style="background:#4f8ef7;"></span></span>
+        <span class="status-label">TARGET</span>
+        <span id="status-url" class="grad-text" style="font-size:12px;"></span>
+        <span id="status-mode-badge" class="mode-badge"></span>
+      </div>
+      <div id="status-right">
+        <span id="run-label" class="run-label">run #1</span>
+        <button id="rescan-btn" class="hidden">↺ Rescan now</button>
+        <button id="done-btn">✕ Done</button>
+      </div>
+    </div>
+    <div id="fetch-status"><div id="fetch-status-inner"></div></div>
+    <div id="metrics" class="hidden">
+      <div class="metric-card" id="score-card">
+        <svg id="score-ring" width="78" height="78" style="transform:rotate(-90deg);">
+          <circle cx="39" cy="39" r="30" fill="none" stroke="#1c1c3a" stroke-width="7"/>
+          <circle id="score-arc" cx="39" cy="39" r="30" fill="none" stroke="#5bdfb0" stroke-width="7" stroke-linecap="round" stroke-dasharray="0 188.5" style="transition:stroke-dasharray 1.2s cubic-bezier(.4,0,.2,1);"/>
+          <text id="score-text" x="39" y="39" text-anchor="middle" dominant-baseline="central" fill="#5bdfb0" font-size="16" font-family="'DM Mono',monospace" font-weight="600" style="transform:rotate(90deg);transform-origin:39px 39px;">—</text>
+        </svg>
+      </div>
+      <div class="metric-card"><div class="bar"></div><div class="metric-label">HEALTH</div><div class="metric-value" id="mv-status">—</div></div>
+      <div class="metric-card"><div class="bar"></div><div class="metric-label">ISSUES</div><div class="metric-value" id="mv-issues">0</div></div>
+      <div class="metric-card"><div class="bar"></div><div class="metric-label">CRITICAL</div><div class="metric-value" id="mv-critical">0</div></div>
+      <div class="metric-card"><div class="bar"></div><div class="metric-label">HIGH</div><div class="metric-value" id="mv-high">0</div></div>
+      <div class="metric-card"><div class="bar"></div><div class="metric-label">TASKS</div><div class="metric-value" id="mv-tasks">0</div></div>
+    </div>
+    <div id="tabs">
+      <button class="tab-btn active" data-tab="tasks">Tasks</button>
+      <button class="tab-btn" data-tab="raw">Raw Data</button>
+      <button class="tab-btn" data-tab="issues" id="tab-issues-btn">Issues</button>
+      <button class="tab-btn" data-tab="logs">Live logs</button>
+      <button class="tab-btn" data-tab="report">AI Report</button>
+      <button class="tab-btn" id="tab-fix-btn" data-tab="fix" style="color:#c4a0ff;border-color:rgba(155,109,255,.25);">✦ Fix Prompts</button>
+    </div>
+    <div class="tab-panel active" id="panel-tasks"><div id="tasks-grid"></div></div>
+    <div class="tab-panel" id="panel-raw"><div id="raw-box"></div></div>
+    <div class="tab-panel" id="panel-issues">
+      <div id="issues-empty" style="color:var(--text-dim);">Scan in progress...</div>
+      <div id="issues-list"></div>
+    </div>
+    <div class="tab-panel" id="panel-logs">
+      <div id="logs-box">
+        <div id="logs-head">
+          <span class="pdot" id="log-dot" style="width:6px;height:6px;"><span class="pdot-ring" style="background:#4f8ef7;"></span><span class="pdot-core" style="background:#4f8ef7;"></span></span>
+          <span>AGENT LOG STREAM</span>
+        </div>
+        <div id="logs-inner"></div>
+      </div>
+    </div>
+    <div class="tab-panel" id="panel-report">
+      <div id="report-placeholder">Scan in progress — report will appear when complete...</div>
+      <div id="report-content" class="hidden"></div>
+    </div>
+    <div class="tab-panel" id="panel-fix">
+      <div id="fix-placeholder" style="color:var(--text-dim);font-size:13px;text-align:center;padding:60px;">Complete a scan to generate fix prompts.</div>
+      <div id="fix-content" class="hidden"></div>
+    </div>
+  </div>
+</div>
+<div style="height:max(60px,calc(40px + env(safe-area-inset-bottom)));"></div>
+<div id="error-toast"></div>
+
+<script>
+const ALL_TASKS = {
+  frontend:[
+    {id:"seo",   label:"SEO",           icon:"🔍",subtasks:["title tag","meta description","Open Graph","canonical","h1 structure","image alt text","schema markup"]},
+    {id:"a11y",  label:"Accessibility", icon:"♿",subtasks:["alt attributes","ARIA roles","heading hierarchy","color contrast","focus management","form labels"]},
+    {id:"mobile",label:"Mobile UX",     icon:"📱",subtasks:["viewport meta","touch targets","responsive images","font sizes","horizontal scroll"]},
+    {id:"perf",  label:"Performance",   icon:"📊",subtasks:["render-blocking","image optimization","inline scripts","HTML size","lazy loading"]},
+    {id:"ui",    label:"UI & Content",  icon:"🖼️", subtasks:["broken links","missing images","deprecated tags","content quality","CTA clarity"]},
+    {id:"auth",  label:"Auth flows",    icon:"🔐",subtasks:["login page","signup page","password reset","protected routes"]},
+  ],
+  backend:[
+    {id:"sec",   label:"Security headers",icon:"🛡️", subtasks:["HTTPS","HSTS","CSP","X-Frame-Options","X-Content-Type","Referrer-Policy"]},
+    {id:"api",   label:"API & routing",  icon:"⚡",subtasks:["HTTP status","redirect chains","404 handling","response time","CORS"]},
+    {id:"crawl", label:"Crawlability",   icon:"🕷️",subtasks:["robots.txt","sitemap.xml","canonical","noindex","structured data"]},
+    {id:"forms", label:"Input security", icon:"📋",subtasks:["form action","autocomplete","input types","required fields","CSRF"]},
+  ],
+  both:[
+    {id:"seo",   label:"SEO",           icon:"🔍",subtasks:["title tag","meta description","Open Graph","canonical","h1 structure","image alt text","schema markup"]},
+    {id:"sec",   label:"Security headers",icon:"🛡️", subtasks:["HTTPS","HSTS","CSP","X-Frame-Options","X-Content-Type","Referrer-Policy"]},
+    {id:"a11y",  label:"Accessibility", icon:"♿",subtasks:["alt attributes","ARIA roles","heading hierarchy","form labels","focus management"]},
+    {id:"mobile",label:"Mobile UX",     icon:"📱",subtasks:["viewport meta","touch targets","responsive images","font sizes"]},
+    {id:"perf",  label:"Performance",   icon:"📊",subtasks:["render-blocking","image optimization","inline scripts","HTML size"]},
+    {id:"api",   label:"API & routing", icon:"⚡",subtasks:["HTTP status","redirect chains","response time","CORS"]},
+    {id:"auth",  label:"Auth flows",    icon:"🔐",subtasks:["login page","signup page","password reset","protected routes"]},
+    {id:"crawl", label:"Crawlability",  icon:"🕷️",subtasks:["robots.txt","sitemap.xml","canonical","structured data"]},
+    {id:"ui",    label:"UI & Content",  icon:"🖼️", subtasks:["broken links","missing images","deprecated tags"]},
+    {id:"forms", label:"Input security",icon:"📋",subtasks:["form action","autocomplete","input types","CSRF"]},
+  ]
+};
+
+const SEV={critical:{color:"#ff5b7f",bg:"#1e0615",label:"CRITICAL"},high:{color:"#ff8c5b",bg:"#1e0e06",label:"HIGH"},medium:{color:"#f5d442",bg:"#1c1804",label:"MEDIUM"},low:{color:"#5bdfb0",bg:"#051a14",label:"LOW"},info:{color:"#7eb3ff",bg:"#060e22",label:"INFO"}};
+
+let phase="idle",runCount=0,allIssues=[],report=null;
+let timerInterval=null,running=false,currentUrl="",currentMode="both";
+let siteData=null,activeTasks=[],staticFindings=[];
+
+document.querySelectorAll(".mode-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{document.querySelectorAll(".mode-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");currentMode=btn.dataset.mode;});
+});
+
+async function fetchSite(url){
+  const res=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"fetch",url})});
+  if(!res.ok)throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+async function callAI(provider,system,user,maxTokens=2000){
+  const res=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action:provider,system,user,max_tokens:maxTokens})});
+  const d=await res.json().catch(()=>({}));
+  if(!res.ok)throw new Error(d.error||`HTTP ${res.status}`);
+  return d.text||"";
+}
+const callClaude=(s,u,m)=>callAI("claude",s,u,m);
+const callGPT=(s,u,m)=>callAI("openai",s,u,m);
+
+// ── Ensemble: normalize an issue's source tag (Claude → ChatGPT review) ──
+function tagSource(issue){
+  const s=String(issue.source||"").toLowerCase();
+  if(s==="both"||s==="confirmed")return"both";
+  if(s==="chatgpt"||s==="gpt"||s==="openai")return"gpt";
+  if(s==="claude")return"claude";
+  return"claude";
+}
+
+function parseJSON(raw){return JSON.parse(raw.replace(/```json\n?|\n?```/g,"").trim());}
+
+function analyzeStatically(data){
+  const html=data.html||"",headers=data.headers||{},findings=[];
+  let doc;
+  try{doc=new DOMParser().parseFromString(html,"text/html");}catch{doc=document.implementation.createHTMLDocument();}
+
+  const title=doc.querySelector("title")?.textContent?.trim()||"";
+  findings.push({check:"Title tag",pass:title.length>0&&title.length<=60,value:title||"MISSING",detail:!title?"Missing title tag":title.length>60?`Too long (${title.length} chars, max 60)`:`Good (${title.length} chars)`});
+
+  const metaDesc=doc.querySelector('meta[name="description"]')?.getAttribute("content")||"";
+  findings.push({check:"Meta description",pass:metaDesc.length>=50&&metaDesc.length<=160,value:metaDesc?`${metaDesc.length} chars`:"MISSING",detail:!metaDesc?"Missing meta description":metaDesc.length<50?"Too short (<50 chars)":metaDesc.length>160?"Too long (>160 chars)":"Good"});
+
+  const vp=doc.querySelector('meta[name="viewport"]')?.getAttribute("content")||"";
+  findings.push({check:"Viewport meta tag",pass:vp.includes("width=device-width"),value:vp||"MISSING",detail:!vp?"Missing — critical for mobile":!vp.includes("width=device-width")?"Incorrect viewport value":"Present and correct"});
+
+  const h1s=doc.querySelectorAll("h1");
+  findings.push({check:"H1 tag",pass:h1s.length===1,value:`${h1s.length} found`,detail:h1s.length===0?"No H1 tag found":h1s.length>1?`Multiple H1 tags (${h1s.length}) — hurts SEO`:"Single H1 — correct"});
+
+  const imgs=doc.querySelectorAll("img");
+  const noAlt=[...imgs].filter(i=>i.getAttribute("alt")===null).length;
+  findings.push({check:"Image alt text",pass:noAlt===0,value:`${noAlt}/${imgs.length} missing`,detail:noAlt>0?`${noAlt} images missing alt — accessibility + SEO issue`:imgs.length===0?"No images found":"All images have alt attributes"});
+
+  const ogT=doc.querySelector('meta[property="og:title"]'),ogD=doc.querySelector('meta[property="og:description"]'),ogI=doc.querySelector('meta[property="og:image"]');
+  findings.push({check:"Open Graph tags",pass:!!(ogT&&ogD&&ogI),value:[ogT?"og:title":"",ogD?"og:desc":"",ogI?"og:image":""].filter(Boolean).join(", ")||"NONE",detail:!(ogT&&ogD&&ogI)?`Missing: ${[!ogT?"og:title":"",!ogD?"og:description":"",!ogI?"og:image":""].filter(Boolean).join(", ")})`:"All core OG tags present"});
+
+  const can=doc.querySelector('link[rel="canonical"]')?.getAttribute("href")||"";
+  findings.push({check:"Canonical tag",pass:!!can,value:can||"MISSING",detail:!can?"No canonical — duplicate content risk":"Present"});
+
+  findings.push({check:"HTTPS",pass:!!(data.url?.startsWith("https://")),value:data.url?.startsWith("https://")?"Enabled":"HTTP only",detail:!data.url?.startsWith("https://")?"Site not served over HTTPS":"HTTPS enforced"});
+
+  const rt=data.responseTime||0;
+  findings.push({check:"Response time",pass:rt<2000,value:rt?`${rt}ms`:"unknown",detail:rt>3000?"Very slow (>3s) — major UX impact":rt>2000?"Slow (>2s) — needs improvement":rt>1000?"Acceptable but could be faster":"Good response time"});
+
+  findings.push({check:"HTTP status code",pass:data.status>=200&&data.status<400,value:String(data.status||0),detail:data.status>=500?"Server error":data.status>=400?"Client error":data.status===0?"Could not connect":`OK (${data.status})`});
+
+  const secHdrs={"strict-transport-security":"HSTS","content-security-policy":"CSP","x-frame-options":"X-Frame-Options","x-content-type-options":"X-Content-Type-Options","referrer-policy":"Referrer-Policy","permissions-policy":"Permissions-Policy"};
+  Object.entries(secHdrs).forEach(([h,name])=>{
+    const present=!!headers[h];
+    findings.push({check:`${name} header`,pass:present,value:present?headers[h].slice(0,60):"MISSING",detail:!present?`Missing ${name} security header`:"Present"});
+  });
+
+  const inlineScripts=doc.querySelectorAll("script:not([src])").length;
+  findings.push({check:"Inline scripts",pass:inlineScripts<3,value:`${inlineScripts}`,detail:inlineScripts>=5?`${inlineScripts} inline scripts — major XSS surface, blocks CSP`:inlineScripts>=3?`${inlineScripts} inline scripts — moderate XSS risk`:inlineScripts===0?"No inline scripts — excellent for CSP":`${inlineScripts} inline script(s)`});
+
+  const forms=doc.querySelectorAll("form");
+  const noAction=[...forms].filter(f=>!f.getAttribute("action")).length;
+  findings.push({check:"Form action attributes",pass:noAction===0,value:`${forms.length} forms, ${noAction} missing`,detail:noAction>0?`${noAction} form(s) missing action attribute`:forms.length===0?"No forms found":"All forms have action attributes"});
+
+  const htmlKB=Math.round((data.htmlLength||0)/1024);
+  findings.push({check:"HTML document size",pass:htmlKB<100,value:`${htmlKB}KB`,detail:htmlKB>300?"Very large HTML (>300KB) — critical performance issue":htmlKB>100?"Large HTML (>100KB) — impacts parse time":"Good HTML size"});
+
+  findings.push({check:"robots.txt",pass:data.robotsTxt===true,value:data.robotsTxt?"Found":"Not found",detail:!data.robotsTxt?"No robots.txt — crawlers have no directives":"Present"});
+  findings.push({check:"sitemap.xml",pass:data.sitemapXml===true,value:data.sitemapXml?"Found":"Not found",detail:!data.sitemapXml?"No sitemap.xml — hurts search engine indexing":"Present"});
+
+  const schemaBlocks=doc.querySelectorAll('script[type="application/ld+json"]').length;
+  findings.push({check:"Schema markup (JSON-LD)",pass:schemaBlocks>0,value:schemaBlocks>0?`${schemaBlocks} block(s)`:"None",detail:schemaBlocks===0?"No structured data found — missed rich snippet opportunity":`${schemaBlocks} JSON-LD block(s) found`});
+
+  const lang=doc.querySelector("html")?.getAttribute("lang")||"";
+  findings.push({check:"HTML lang attribute",pass:!!lang,value:lang||"MISSING",detail:!lang?"Missing lang on <html> — screen readers can't determine language":`Set to "${lang}"`});
+
+  const favicon=doc.querySelector('link[rel*="icon"]');
+  findings.push({check:"Favicon",pass:!!favicon,value:favicon?"Present":"Missing",detail:!favicon?"No favicon defined":"Favicon present"});
+
+  findings.push({check:"URL redirected",pass:!data.redirected,value:data.redirected?`→ ${data.finalUrl}`:"No redirect",detail:data.redirected?`Redirects to ${data.finalUrl} — check for unnecessary hops`:"No redirect"});
+
+  const extCSS=[...doc.querySelectorAll('link[rel="stylesheet"][href]')].length;
+  findings.push({check:"External stylesheets",pass:extCSS<=3,value:`${extCSS}`,detail:extCSS>5?`${extCSS} stylesheets — multiple render-blocking resources`:extCSS>3?`${extCSS} stylesheets — consider consolidating`:`${extCSS} stylesheet(s)`});
+
+  return findings;
+}
+
+function renderRawData(data,findings){
+  const box=document.getElementById("raw-box");
+  if(!data){box.innerHTML=`<div style="color:var(--text-dim);text-align:center;padding:40px;">No data yet</div>`;return;}
+  const h=data.headers||{};
+  let html=`<div class="raw-section"><div class="raw-section-title">HTTP RESPONSE</div>`;
+  [[`Status code`,data.status,data.status>=200&&data.status<400?"good":"bad"],[`Response time`,`${data.responseTime}ms`,data.responseTime<2000?"good":data.responseTime<3000?"warn":"bad"],[`Final URL`,data.finalUrl,data.finalUrl===data.url?"good":"warn"],[`Redirected`,data.redirected?"Yes":"No",data.redirected?"warn":"good"],[`HTML size`,`${Math.round((data.htmlLength||0)/1024)}KB`,data.htmlLength<100000?"good":"warn"],[`HTTPS`,data.url?.startsWith("https")?"Yes":"No",data.url?.startsWith("https")?"good":"bad"],[`robots.txt`,data.robotsTxt?"Found":"Missing",data.robotsTxt?"good":"warn"],[`sitemap.xml`,data.sitemapXml?"Found":"Missing",data.sitemapXml?"good":"warn"]].forEach(([k,v,c])=>{html+=`<div class="raw-row"><span class="raw-key">${k}</span><span class="raw-val ${c||""}">${v}</span></div>`;});
+  html+=`</div><div class="raw-section"><div class="raw-section-title">SECURITY HEADERS</div>`;
+  ["strict-transport-security","content-security-policy","x-frame-options","x-content-type-options","referrer-policy","permissions-policy","cross-origin-embedder-policy","cross-origin-opener-policy"].forEach(header=>{
+    const v=h[header];html+=`<div class="raw-row"><span class="raw-key">${header}</span><span class="raw-val ${v?"good":"bad"}">${v?v.slice(0,80):"MISSING"}</span></div>`;
+  });
+  html+=`</div><div class="raw-section"><div class="raw-section-title">ALL RESPONSE HEADERS</div>`;
+  Object.entries(h).sort().forEach(([k,v])=>{html+=`<div class="raw-row"><span class="raw-key">${k}</span><span class="raw-val">${String(v).slice(0,100)}</span></div>`;});
+  html+=`</div>`;
+  if(findings?.length){
+    const passed=findings.filter(f=>f.pass).length;
+    html+=`<div class="raw-section"><div class="raw-section-title">STATIC ANALYSIS — ${passed}/${findings.length} PASSED</div>`;
+    findings.forEach(f=>{html+=`<div class="finding-item ${f.pass?"finding-pass":"finding-fail"}"><div style="font-size:9px;color:${f.pass?"#5bdfb0":"#ff5b7f"};letter-spacing:.1em;margin-bottom:3px;">${f.pass?"✓":"✗"} ${f.check} — ${f.value}</div><div style="color:var(--text-second);font-size:11px;">${f.detail}</div></div>`;});
+    html+=`</div>`;
+  }
+  box.innerHTML=html;
+}
+
+async function runAgentTask(url,task,data,findings){
+  const html=data?.html||"",headers=data?.headers||{};
+  const taskFindings=findings.filter(f=>{
+    const id=task.id;
+    if(id==="seo")    return["Title tag","Meta description","H1 tag","Canonical tag","Open Graph tags","Schema markup (JSON-LD)","robots.txt","sitemap.xml"].includes(f.check);
+    if(id==="sec")    return f.check.includes("header")||f.check==="HTTPS"||f.check==="Inline scripts";
+    if(id==="a11y")   return["Image alt text","HTML lang attribute","Form action attributes"].includes(f.check);
+    if(id==="mobile") return["Viewport meta tag","HTML document size","External stylesheets"].includes(f.check);
+    if(id==="perf")   return["Response time","HTML document size","Inline scripts","External stylesheets"].includes(f.check);
+    if(id==="api")    return["HTTP status code","URL redirected","Response time"].includes(f.check);
+    if(id==="crawl")  return["robots.txt","sitemap.xml","Canonical tag","Schema markup (JSON-LD)"].includes(f.check);
+    if(id==="ui")     return["Image alt text","Favicon","Title tag"].includes(f.check);
+    if(id==="auth")   return f.check.includes("Form");
+    if(id==="forms")  return f.check.includes("Form")||f.check==="Inline scripts";
+    return true;
+  });
+
+  let htmlSnippet="";
+  try{
+    const doc=new DOMParser().parseFromString(html,"text/html");
+    if(["seo","a11y","mobile"].includes(task.id)){const hm=html.match(/<head[\s\S]*?<\/head>/i);htmlSnippet=hm?hm[0].slice(0,3000):html.slice(0,2000);}
+    else if(["forms","auth"].includes(task.id)){const fm=(html.match(/<form[\s\S]*?<\/form>/gi)||[]);htmlSnippet=fm.slice(0,3).join("\n").slice(0,3000);}
+    else if(task.id==="ui"){htmlSnippet=html.slice(0,2500);}
+  }catch{}
+
+  const sys=`You are a senior QA engineer doing a real technical audit. You have ACTUAL fetched data. Be specific and harsh. Never give generic answers. Base everything on the real data provided. Do not make things up.`;
+  const usr=`DEEP QA ANALYSIS: "${task.label}"
+URL: ${url}
+HTTP: ${data?.status} in ${data?.responseTime}ms | HTTPS: ${data?.url?.startsWith("https")?"yes":"no"}
+
+REAL STATIC FINDINGS FOR THIS CATEGORY:
+${taskFindings.map(f=>`${f.pass?"PASS":"FAIL"} — ${f.check}: ${f.detail} [${f.value}]`).join("\n")||"No specific findings for this category"}
+
+RESPONSE HEADERS SAMPLE:
+${Object.entries(headers).slice(0,15).map(([k,v])=>`${k}: ${v}`).join("\n")}
+
+${htmlSnippet?`ACTUAL HTML SNIPPET:\n${htmlSnippet}`:""}
+
+Subtasks: ${task.subtasks.join(", ")}
+
+SCORING: Start at 100. Deduct: critical=-25, high=-15, medium=-8, low=-3.
+If static findings show failures, score MUST reflect this. A site with 3 FAIL static checks CANNOT score 75.
+
+Return ONLY this JSON (no other text):
+{"status":"pass"|"fail"|"warning","score":<integer 0-100>,"issues":[{"severity":"critical"|"high"|"medium"|"low"|"info","title":"<specific title>","description":"<exact problem with evidence from the real data>","reproduction":"<exact steps>","fix":"<specific code or config>"}],"summary":"<one sentence with specific details from real data>"}`;
+
+  try{
+    // ── Stage 1: Claude performs the primary analysis ──
+    let primary=null,consolidated=null,engines;
+    try{ primary=parseJSON(await callClaude(sys,usr,1500)); }
+    catch(e){ addLog(`Claude analysis failed (${task.label}): ${e.message}`,"warn"); }
+
+    if(primary){
+      // ── Stage 2: ChatGPT peer-reviews and consolidates Claude's analysis ──
+      const reviewSys=`You are a second senior QA engineer peer-reviewing a colleague's audit. Base every judgment on the real data provided. Be rigorous: confirm correct findings, delete false positives, add anything genuinely missed.`;
+      const reviewUsr=`${usr}
+
+──────────────────────────────
+FIRST ENGINEER'S ANALYSIS (peer-review this):
+${JSON.stringify(primary)}
+──────────────────────────────
+
+Review the analysis above against the REAL DATA, then return the consolidated final analysis as ONLY this JSON:
+{"status":"pass"|"fail"|"warning","score":<integer 0-100>,"issues":[{"severity":"critical"|"high"|"medium"|"low"|"info","title":"<title>","description":"<problem with real evidence>","reproduction":"<steps>","fix":"<code or config>","source":"both"|"chatgpt"}],"summary":"<one sentence>"}
+For each issue, set "source" to "both" if you agree with the first engineer's finding, or "chatgpt" if you are adding a finding they missed. Drop false positives entirely.`;
+      try{
+        consolidated=parseJSON(await callGPT(reviewSys,reviewUsr,1700));
+        engines=["Claude","ChatGPT"];
+      }catch(e){
+        addLog(`ChatGPT review unavailable (${task.label}): ${e.message} — using Claude only`,"warn");
+      }
+    }else{
+      // Claude unavailable → ChatGPT runs the primary analysis instead
+      try{
+        consolidated=parseJSON(await callGPT(sys,usr,1500));
+        engines=["ChatGPT"];
+      }catch(e){
+        addLog(`ChatGPT analysis failed (${task.label}): ${e.message}`,"warn");
+      }
+    }
+
+    const result=consolidated||primary;
+    if(result){
+      result.engines=engines||["Claude"];
+      const tagger=(consolidated&&primary)?tagSource:(primary?(()=>"claude"):(()=>"gpt"));
+      result.issues=(result.issues||[]).map(i=>({...i,source:tagger(i)}));
+      // Validate score is grounded — recalculate if suspiciously generic
+      const failedChecks=taskFindings.filter(f=>!f.pass).length;
+      if(result.score===75&&failedChecks>0)result.score=Math.max(20,100-(failedChecks*12));
+      return result;
+    }
+    throw new Error("both AI engines failed");
+  }catch(e){
+    addLog("AI analysis fell back to static for "+task.label+": "+e.message,"error");
+    const failed=taskFindings.filter(f=>!f.pass).length;
+    const score=Math.max(20,100-(failed*12));
+    return{status:failed>2?"fail":failed>0?"warning":"pass",score,engines:["static"],issues:taskFindings.filter(f=>!f.pass).map(f=>({severity:f.check.includes("HTTPS")||f.check.includes("CSP")||f.check.includes("HSTS")?"high":"medium",title:f.check+" — "+f.value,description:f.detail,reproduction:"Check page source or response headers",fix:"Fix: "+f.check,source:"static"})),summary:`${taskFindings.filter(f=>f.pass).length}/${taskFindings.length} checks passed`};
+  }
+}
+
+async function generateFullReport(url,taskResults,mode,data,findings){
+  const issues=taskResults.flatMap(t=>(t.result?.issues||[]).map(i=>({...i,category:t.task.label})));
+  const passed=findings.filter(f=>f.pass).length,total=findings.length;
+  const avgScore=taskResults.length?Math.round(taskResults.reduce((s,t)=>s+(t.result?.score||0),0)/taskResults.length):0;
+  const critCount=issues.filter(i=>i.severity==="critical").length;
+  const highCount=issues.filter(i=>i.severity==="high").length;
+  const usr=`Final QA report for: ${url}
+Mode: ${mode} | HTTP: ${data?.status} in ${data?.responseTime}ms | HTTPS: ${data?.url?.startsWith("https")?"yes":"no"}
+Static analysis: ${passed}/${total} passed
+Average score: ${avgScore}/100
+Critical issues: ${critCount} | High: ${highCount}
+
+Task results:
+${taskResults.map(t=>`${t.task.label}: score=${t.result?.score} status=${t.result?.status} — ${t.result?.summary}`).join("\n")}
+
+Issues (${issues.length}):
+${issues.map(i=>`[${i.severity.toUpperCase()}] ${i.category}: ${i.title}`).join("\n")||"none"}
+
+Return ONLY JSON:
+{"overall_score":<integer, weighted by real data, NOT 75>,"health":"healthy"|"degraded"|"critical","headline":"<specific punchy summary with real finding>","top_priority":"<most impactful fix with specific detail>","next_run_recommendation":"<specific advice>","positive_findings":["<actual passing thing>","<another>"]}
+
+Score rules: <50=critical, 50-69=degraded, 70-84=degraded, 85+=healthy. Must match real data.`;
+  const sysR="Senior QA engineer. JSON only. Base on real data.";
+  const [cR,gR]=await Promise.allSettled([
+    callClaude(sysR,usr,1000),
+    callGPT(sysR,usr,1000),
+  ]);
+  let cr=null,gr=null;
+  if(cR.status==="fulfilled"){try{cr=parseJSON(cR.value);}catch{}}
+  if(gR.status==="fulfilled"){try{gr=parseJSON(gR.value);}catch{}}
+  const fixScore=r=>{if(r&&r.overall_score===75&&critCount>0)r.overall_score=Math.max(25,75-(critCount*15)-(highCount*8));return r;};
+  cr=fixScore(cr);gr=fixScore(gr);
+  if(cr&&gr){
+    const score=Math.round(((cr.overall_score||0)+(gr.overall_score||0))/2);
+    const pf=[...new Set([...(cr.positive_findings||[]),...(gr.positive_findings||[])])].slice(0,6);
+    return{overall_score:score,health:score<50?"critical":score<85?"degraded":"healthy",
+      headline:cr.headline||gr.headline,top_priority:cr.top_priority||gr.top_priority,
+      next_run_recommendation:cr.next_run_recommendation||gr.next_run_recommendation,
+      positive_findings:pf,engines:["Claude","ChatGPT"]};
+  }
+  if(cr||gr){const r=cr||gr;r.engines=[cr?"Claude":"ChatGPT"];return r;}
+  return{overall_score:avgScore,health:avgScore>=85?"healthy":avgScore>=60?"degraded":"critical",headline:`${issues.length} issues found — score ${avgScore}/100`,top_priority:issues[0]?`Fix: ${issues[0].title}`:"No critical issues",next_run_recommendation:"Run again after addressing high priority items",positive_findings:taskResults.filter(t=>t.result?.status==="pass").map(t=>t.task.label+" passed"),engines:["static"]};
+}
+
+function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function pdotHtml(c,s){return`<span class="pdot" style="width:${s}px;height:${s}px;"><span class="pdot-ring" style="background:${c};"></span><span class="pdot-core" style="background:${c};"></span></span>`;}
+function setDotColor(el,c){if(!el)return;el.querySelector(".pdot-ring").style.background=c;el.querySelector(".pdot-core").style.background=c;}
+
+function addLog(msg,type="info"){
+  const colors={info:"#4f8ef7",success:"#5bdfb0",warn:"#f5d442",error:"#ff5b7f",system:"#9b6dff",data:"#6e7fff"};
+  const time=new Date().toLocaleTimeString("en-US",{hour12:false});
+  const el=document.createElement("div");el.className="log-line";
+  el.innerHTML=`<span class="log-time">${time}</span><span class="log-type" style="color:${colors[type]||colors.info}">[${type.toUpperCase()}]</span><span class="log-msg">${msg}</span>`;
+  document.getElementById("logs-inner").appendChild(el);
+  const box=document.getElementById("logs-box");box.scrollTop=box.scrollHeight;
+}
+
+function updateFetchStatus(d){
+  const el=document.getElementById("fetch-status"),inner=document.getElementById("fetch-status-inner");
+  if(!d){el.style.display="none";return;}
+  el.style.display="block";
+  const sc=d.status>=200&&d.status<400?"#5bdfb0":"#ff5b7f";
+  const tc=d.responseTime<2000?"#5bdfb0":d.responseTime<3000?"#f5d442":"#ff5b7f";
+  inner.innerHTML=`<div class="fstat"><div class="fstat-label">HTTP</div><div class="fstat-value" style="color:${sc}">${d.status}</div></div><div class="fstat"><div class="fstat-label">TIME</div><div class="fstat-value" style="color:${tc}">${d.responseTime}ms</div></div><div class="fstat"><div class="fstat-label">HTTPS</div><div class="fstat-value" style="color:${d.url?.startsWith("https")?"#5bdfb0":"#ff5b7f"}">${d.url?.startsWith("https")?"✓":"✗"}</div></div><div class="fstat"><div class="fstat-label">HTML</div><div class="fstat-value">${Math.round((d.htmlLength||0)/1024)}KB</div></div><div class="fstat"><div class="fstat-label">HSTS</div><div class="fstat-value" style="color:${d.headers?.["strict-transport-security"]?"#5bdfb0":"#ff5b7f"}">${d.headers?.["strict-transport-security"]?"✓":"✗"}</div></div><div class="fstat"><div class="fstat-label">CSP</div><div class="fstat-value" style="color:${d.headers?.["content-security-policy"]?"#5bdfb0":"#ff5b7f"}">${d.headers?.["content-security-policy"]?"✓":"✗"}</div></div><div class="fstat"><div class="fstat-label">robots.txt</div><div class="fstat-value" style="color:${d.robotsTxt?"#5bdfb0":"#f5d442"}">${d.robotsTxt?"✓":"✗"}</div></div><div class="fstat"><div class="fstat-label">sitemap</div><div class="fstat-value" style="color:${d.sitemapXml?"#5bdfb0":"#f5d442"}">${d.sitemapXml?"✓":"✗"}</div></div>${d.error?`<div class="fstat"><div class="fstat-label">ERROR</div><div class="fstat-value" style="color:#ff5b7f">${d.error.slice(0,40)}</div></div>`:""}`;
+}
+
+function renderTaskCard(task,state){
+  const el=document.getElementById("tc-"+task.id);if(!el)return;
+  const{phase:p,result,subtaskIndex:si}=state;
+  const status=result?.status||"idle",score=result?.score;
+  const sc=p==="running"?"#4f8ef7":status==="pass"?"#5bdfb0":status==="fail"?"#ff5b7f":status==="warning"?"#f5d442":"#3a3a6a";
+  if(p==="running"){el.classList.add("running");el.querySelector(".task-scan-bar").style.display="block";}
+  else{el.classList.remove("running");el.querySelector(".task-scan-bar").style.display="none";}
+  el.querySelector(".task-corner").style.background=p==="done"?`radial-gradient(circle at top right,${sc}18,transparent 70%)`:"none";
+  const sb=el.querySelector(".task-score");
+  if(score!==undefined){sb.textContent=score;sb.style.color=sc;sb.style.borderColor=sc+"35";sb.style.background=sc+"10";sb.style.display="inline";}else sb.style.display="none";
+  const st=el.querySelector(".task-status-txt");
+  if(p==="done"){st.textContent=status.toUpperCase();st.style.color=sc;st.style.display="inline";}else st.style.display="none";
+  const rd=el.querySelector(".task-run-dot");
+  if(p==="running"){rd.style.display="inline-block";setDotColor(rd,"#4f8ef7");}else rd.style.display="none";
+  const body=el.querySelector(".task-body");body.innerHTML="";
+  if(p==="idle"){const pills=document.createElement("div");pills.className="subtask-pills";task.subtasks.forEach(s=>{const sp=document.createElement("span");sp.className="subtask-pill";sp.textContent=s;pills.appendChild(sp);});body.appendChild(pills);}
+  if(p==="running"){
+    const pills=document.createElement("div");pills.className="subtask-pills";
+    task.subtasks.forEach((s,i)=>{const sp=document.createElement("span");sp.className="subtask-pill"+(i===si?" active":i<si?" done":"");sp.textContent=(i<si?"✓ ":i===si?"▶ ":"")+s;pills.appendChild(sp);});
+    body.appendChild(pills);
+    const chk=document.createElement("div");chk.className="task-checking";chk.textContent="checking "+task.subtasks[si||0]+"...";body.appendChild(chk);
+  }
+  if(p==="done"&&result){
+    const sum=document.createElement("p");sum.className="task-summary";sum.textContent=result.summary;body.appendChild(sum);
+    if(result.issues?.length>0){const iw=document.createElement("div");iw.className="task-issues";result.issues.forEach(issue=>{const s=SEV[issue.severity]||SEV.info;const row=document.createElement("div");row.className="task-issue";row.style.background=s.bg;row.style.borderColor=s.color+"25";row.innerHTML=`<span class="issue-badge" style="color:${s.color}">${s.label}</span><span class="issue-title-sm">${issue.title}</span>`;iw.appendChild(row);});body.appendChild(iw);}
+    else{const ni=document.createElement("div");ni.className="no-issues";ni.textContent="✓ No issues found";body.appendChild(ni);}
+  }
+}
+
+function buildTaskGrid(){
+  const grid=document.getElementById("tasks-grid");grid.innerHTML="";
+  activeTasks.forEach(task=>{
+    const card=document.createElement("div");card.className="task-card";card.id="tc-"+task.id;
+    card.innerHTML=`<div class="task-scan-bar" style="display:none;"></div><div class="task-corner"></div><div class="task-header"><div class="task-title"><span class="task-icon">${task.icon}</span><span class="task-name">${task.label}</span></div><div class="task-meta"><span class="pdot task-run-dot" style="width:7px;height:7px;display:none;"><span class="pdot-ring" style="background:#4f8ef7;"></span><span class="pdot-core" style="background:#4f8ef7;"></span></span><span class="task-score" style="display:none;"></span><span class="task-status-txt" style="display:none;"></span></div></div><div class="task-body"></div>`;
+    grid.appendChild(card);renderTaskCard(task,{phase:"idle"});
+  });
+}
+
+function modelBadge(src){
+  if(src==="both")return`<span class="model-badge" style="color:#5bdfb0;border-color:#5bdfb055;background:#5bdfb012;">BOTH ✓</span>`;
+  if(src==="gpt")return`<span class="model-badge" style="color:#10a37f;border-color:#10a37f55;background:#10a37f12;">CHATGPT</span>`;
+  if(src==="claude")return`<span class="model-badge" style="color:#7eb3ff;border-color:#7eb3ff55;background:#7eb3ff12;">CLAUDE</span>`;
+  if(src==="static")return`<span class="model-badge" style="color:#8890cc;border-color:#8890cc55;background:#8890cc12;">STATIC</span>`;
+  return"";
+}
+function renderIssues(){
+  const list=document.getElementById("issues-list"),empty=document.getElementById("issues-empty");
+  list.innerHTML="";
+  if(allIssues.length===0){empty.style.color=phase==="running"?"var(--text-dim)":"#5bdfb0";empty.textContent=phase==="running"?"Scan in progress...":"✓ No issues found.";empty.style.display="block";return;}
+  empty.style.display="none";
+  document.getElementById("tab-issues-btn").textContent=`Issues (${allIssues.length})`;
+  ["critical","high","medium","low","info"].forEach(sev=>{
+    allIssues.filter(i=>i.severity===sev).forEach(issue=>{
+      const s=SEV[issue.severity]||SEV.info;
+      const row=document.createElement("div");row.className="issue-row";
+      row.innerHTML=`<div class="issue-row-head"><span class="issue-sev-badge" style="color:${s.color};border-color:${s.color}45;background:${s.color}12;">${s.label}</span><span class="issue-row-title">${issue.title}</span>${modelBadge(issue.source)}<span class="issue-row-cat">${issue.category}</span><span class="issue-row-arrow">▼</span></div><div class="issue-row-body"><div class="issue-section"><div class="issue-section-label" style="color:#4f8ef7;">DESCRIPTION</div><div class="issue-section-text" style="color:var(--text-second);">${issue.description}</div></div><div class="issue-section"><div class="issue-section-label" style="color:#6e7fff;">REPRODUCTION</div><div class="issue-section-text" style="color:var(--text-second);">${issue.reproduction}</div></div><div class="issue-section"><div class="issue-section-label" style="color:#5bdfb0;">SUGGESTED FIX</div><div class="issue-section-text" style="color:#90e0c0;">${issue.fix}</div></div></div>`;
+      row.querySelector(".issue-row-head").addEventListener("click",()=>{const b=row.querySelector(".issue-row-body"),a=row.querySelector(".issue-row-arrow"),open=b.classList.toggle("open");a.textContent=open?"▲":"▼";row.style.borderColor=open?s.color+"38":"var(--border)";row.style.boxShadow=open?`0 0 18px ${s.color}12`:"none";});
+      list.appendChild(row);
+    });
+  });
+}
+
+function updateMetrics(){
+  if(!report)return;
+  document.getElementById("metrics").classList.remove("hidden");
+  const s=report.overall_score,color=s>=80?"#5bdfb0":s>=60?"#f5d442":"#ff5b7f";
+  const circ=2*Math.PI*30,dash=(s/100)*circ;
+  document.getElementById("score-arc").setAttribute("stroke",color);document.getElementById("score-arc").setAttribute("stroke-dasharray",dash+" "+circ);
+  document.getElementById("score-text").setAttribute("fill",color);document.getElementById("score-text").textContent=s;
+  document.getElementById("score-ring").style.filter=`drop-shadow(0 0 8px ${color}50)`;
+  const hc=report.health==="healthy"?"#5bdfb0":report.health==="degraded"?"#f5d442":"#ff5b7f";
+  const mvs=document.getElementById("mv-status");mvs.textContent=report.health.toUpperCase();mvs.style.color=hc;mvs.style.textShadow=`0 0 20px ${hc}55`;
+  const ic=allIssues.length,icol=ic>0?"#ff8c5b":"#5bdfb0";const mvi=document.getElementById("mv-issues");mvi.textContent=ic;mvi.style.color=icol;mvi.style.textShadow=`0 0 20px ${icol}55`;
+  const cc=allIssues.filter(i=>i.severity==="critical").length,ccol=cc>0?"#ff5b7f":"#5bdfb0";const mvc=document.getElementById("mv-critical");mvc.textContent=cc;mvc.style.color=ccol;mvc.style.textShadow=`0 0 20px ${ccol}55`;
+  const hh=allIssues.filter(i=>i.severity==="high").length,hcol=hh>0?"#ff8c5b":"#5bdfb0";const mvh=document.getElementById("mv-high");mvh.textContent=hh;mvh.style.color=hcol;mvh.style.textShadow=`0 0 20px ${hcol}55`;
+  const mvt=document.getElementById("mv-tasks");mvt.textContent=activeTasks.length;mvt.style.color="#7eb3ff";mvt.style.textShadow="0 0 20px #7eb3ff55";
+}
+
+function renderReport(){
+  const placeholder=document.getElementById("report-placeholder"),content=document.getElementById("report-content");
+  if(!report){placeholder.style.display="block";content.classList.add("hidden");return;}
+  placeholder.style.display="none";content.classList.remove("hidden");content.innerHTML="";
+  const hc=document.createElement("div");hc.className="report-card";hc.innerHTML=`<div class="report-card-bar"></div><div class="report-label">${(report.engines||["AI"]).join(" + ").toUpperCase()} ASSESSMENT — ${currentMode.toUpperCase()} SCAN · REAL HTTP DATA</div><p class="report-headline">${report.headline}</p><p class="report-rec">${report.next_run_recommendation}</p>`;content.appendChild(hc);
+  if(report.top_priority){const pc=document.createElement("div");pc.className="priority-card";pc.innerHTML=`<span class="priority-icon">🎯</span><div><div class="priority-label">TOP PRIORITY</div><p class="priority-text">${report.top_priority}</p></div>`;content.appendChild(pc);}
+  if(report.positive_findings?.length>0){const pos=document.createElement("div");pos.className="positives-card";let h=`<div class="positives-label">WHAT'S WORKING</div>`;report.positive_findings.forEach(f=>{h+=`<div class="positive-item"><span class="positive-check">✓</span><span>${f}</span></div>`;});pos.innerHTML=h;content.appendChild(pos);}
+  const bc=document.createElement("div");bc.className="breakdown-card";let bh=`<div class="breakdown-label">ISSUE BREAKDOWN</div><div class="breakdown-grid">`;
+  ["critical","high","medium","low"].forEach(sev=>{const s=SEV[sev],count=allIssues.filter(i=>i.severity===sev).length;bh+=`<div class="breakdown-item" style="background:${s.bg};border-color:${s.color}25;box-shadow:0 0 14px ${s.color}14;"><div class="breakdown-num" style="color:${s.color};text-shadow:0 0 16px ${s.color}80;">${count}</div><div class="breakdown-name" style="color:${s.color};">${sev}</div></div>`;});
+  bh+="</div>";bc.innerHTML=bh;content.appendChild(bc);
+  const tc=document.createElement("div");tc.className="timer-card";tc.innerHTML=`<div class="timer-left">${pdotHtml("#9b6dff",7)}<span class="timer-label">Next auto-scan in</span></div><span class="timer-value" id="report-timer-val">15:00</span>`;content.appendChild(tc);
+}
+
+function startCountdown(targetUrl){
+  clearInterval(timerInterval);let secs=15*60;
+  document.getElementById("header-timer").classList.remove("hidden");document.getElementById("header-timer").style.display="flex";
+  const hv=document.getElementById("header-timer-val");
+  const tick=()=>{const f=fmt(secs);if(hv)hv.textContent=f;const rv=document.getElementById("report-timer-val");if(rv)rv.textContent=f;secs--;if(secs<0){clearInterval(timerInterval);addLog("Auto-scan triggered","system");startScan(targetUrl,currentMode);}};
+  tick();timerInterval=setInterval(tick,1000);
+}
+
+async function startScan(targetUrl,mode){
+  if(running)return;
+  running=true;phase="running";currentUrl=targetUrl;currentMode=mode;
+  allIssues=[];report=null;siteData=null;staticFindings=[];runCount++;
+  activeTasks=ALL_TASKS[mode]||ALL_TASKS.both;
+
+  document.getElementById("hero").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
+  document.getElementById("fetch-status").style.display="none";
+  document.getElementById("status-url").textContent=targetUrl;
+  document.getElementById("run-label").textContent="run #"+runCount;
+  document.getElementById("rescan-btn").classList.add("hidden");
+  document.getElementById("status-mode-badge").textContent=mode.toUpperCase()+" SCAN";
+  setDotColor(document.getElementById("status-dot"),"#4f8ef7");
+  const hs=document.getElementById("header-status");hs.classList.remove("hidden");hs.style.display="flex";
+  document.getElementById("header-status-text").textContent="scanning";
+  setDotColor(document.getElementById("header-dot"),"#4f8ef7");
+  document.getElementById("header-timer").classList.add("hidden");
+  document.getElementById("metrics").classList.add("hidden");
+  document.getElementById("report-placeholder").textContent="Scan in progress...";
+  document.getElementById("report-placeholder").style.display="block";
+  document.getElementById("report-content").classList.add("hidden");
+  document.getElementById("issues-empty").style.color="var(--text-dim)";
+  document.getElementById("issues-empty").textContent="Scan in progress...";
+  document.getElementById("issues-empty").style.display="block";
+  document.getElementById("issues-list").innerHTML="";
+  document.getElementById("tab-issues-btn").textContent="Issues";
+  document.getElementById("fix-placeholder").style.display="block";document.getElementById("fix-content").classList.add("hidden");document.getElementById("fix-content").innerHTML="";
+  document.getElementById("tab-fix-btn").style.color="#c4a0ff";
+  document.getElementById("raw-box").innerHTML=`<div style="color:var(--text-dim);text-align:center;padding:40px;">Fetching real site data...</div>`;
+  buildTaskGrid();document.getElementById("logs-inner").innerHTML="";
+
+  addLog(`Scan started — mode: ${mode.toUpperCase()} — target: ${targetUrl}`,"system");
+  addLog(`${activeTasks.length} test categories queued`,"info");
+
+  // PHASE 1: Real HTTP fetch
+  addLog("Fetching target site via real HTTP request...","data");
+  try{
+    siteData=await fetchSite(targetUrl);
+    updateFetchStatus(siteData);
+    if(siteData.error){addLog(`Fetch warning: ${siteData.error}`,"warn");}
+    else{addLog(`Fetched ${Math.round((siteData.htmlLength||0)/1024)}KB HTML — HTTP ${siteData.status} in ${siteData.responseTime}ms`,"success");}
+    if(siteData.redirected)addLog(`Redirected to: ${siteData.finalUrl}`,"warn");
+    const h=siteData.headers||{};
+    addLog(`HTTPS:${siteData.url?.startsWith("https")?"✓":"✗"} HSTS:${h["strict-transport-security"]?"✓":"✗"} CSP:${h["content-security-policy"]?"✓":"✗"} X-Frame:${h["x-frame-options"]?"✓":"✗"}`,"data");
+    addLog(`robots.txt:${siteData.robotsTxt?"✓":"✗"} sitemap.xml:${siteData.sitemapXml?"✓":"✗"}`,"data");
+  }catch(e){
+    addLog(`Fetch failed: ${e.message}`,"error");
+    siteData={url:targetUrl,status:0,error:e.message,headers:{},html:"",htmlLength:0,responseTime:0,robotsTxt:false,sitemapXml:false};
+    updateFetchStatus(siteData);
+  }
+
+  // PHASE 2: Static analysis
+  addLog("Running static analysis on real HTML...","data");
+  staticFindings=analyzeStatically(siteData);
+  const passed=staticFindings.filter(f=>f.pass).length;
+  const failed=staticFindings.filter(f=>!f.pass).length;
+  addLog(`Static: ${passed}/${staticFindings.length} passed — ${failed} issue(s) detected`,"data");
+  staticFindings.filter(f=>!f.pass).forEach(f=>addLog(`  ✗ ${f.check}: ${f.detail}`,"warn"));
+  renderRawData(siteData,staticFindings);
+
+  // PHASE 3: AI deep analysis
+  const taskResults=[];
+  for(const task of activeTasks){
+    addLog(`▶ ${task.label} — Claude + ChatGPT analysis...`,"info");
+    renderTaskCard(task,{phase:"running",subtaskIndex:0});
+    for(let i=0;i<task.subtasks.length;i++){renderTaskCard(task,{phase:"running",subtaskIndex:i});await sleep(180+Math.random()*120);}
+    const result=await runAgentTask(targetUrl,task,siteData,staticFindings);
+    taskResults.push({task,result});renderTaskCard(task,{phase:"done",result});
+    const cc=(result.issues||[]).filter(i=>i.severity==="critical").length,cnt=(result.issues||[]).length;
+    if(result.status==="fail"||cc>0)addLog(`  ✗ ${task.label}: score ${result.score} — ${cnt} issues (${cc} critical)`,"error");
+    else if(result.status==="warning")addLog(`  ⚠ ${task.label}: score ${result.score} — ${cnt} warnings`,"warn");
+    else addLog(`  ✓ ${task.label}: score ${result.score} — clean`,"success");
+    const newIssues=(result.issues||[]).map(i=>({...i,category:task.label}));
+    allIssues=[...allIssues,...newIssues];
+    if(newIssues.length>0)renderIssues();
+  }
+
+  // PHASE 4: Final report
+  addLog("Generating final AI report...","system");
+  report=await generateFullReport(targetUrl,taskResults,mode,siteData,staticFindings);
+  const cc2=allIssues.filter(i=>i.severity==="critical").length;
+  addLog(`━━━ COMPLETE ━━━ Score: ${report.overall_score}/100  Health: ${report.health?.toUpperCase()}`,"system");
+  addLog(`${cc2} critical · ${allIssues.filter(i=>i.severity==="high").length} high · ${allIssues.filter(i=>i.severity==="medium").length} medium · ${allIssues.filter(i=>i.severity==="low").length} low`,cc2>0?"error":"warn");
+  addLog(`Static checks: ${passed}/${staticFindings.length} passed`,"data");
+
+  phase="done";running=false;
+  renderIssues();updateMetrics();renderReport();
+  if(currentUser)saveScan(targetUrl,mode);
+  setDotColor(document.getElementById("status-dot"),"#5bdfb0");
+  document.getElementById("rescan-btn").classList.remove("hidden");
+  document.getElementById("header-status-text").textContent=`run #${runCount} — score ${report.overall_score}`;
+  setDotColor(document.getElementById("header-dot"),"#5bdfb0");
+  setDotColor(document.getElementById("log-dot"),"#9b6dff");
+  addLog("Next scan in 15:00","system");
+  startCountdown(targetUrl);
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// FIX PROMPT GENERATION
+// ═══════════════════════════════════════════════════════════════
+function buildFixContext() {
+  const issues = allIssues;
+  const findings = staticFindings;
+  const data = siteData;
+  const headers = data?.headers || {};
+
+  const issuesByCategory = {};
+  issues.forEach(i => {
+    if (!issuesByCategory[i.category]) issuesByCategory[i.category] = [];
+    issuesByCategory[i.category].push(i);
+  });
+
+  const failedStatic = findings.filter(f => !f.pass);
+  const passedStatic = findings.filter(f => f.pass);
+
+  const context = {
+    url: currentUrl,
+    score: report?.overall_score || 0,
+    health: report?.health || "unknown",
+    mode: currentMode,
+    httpStatus: data?.status,
+    responseTime: data?.responseTime,
+    https: data?.url?.startsWith("https"),
+    securityHeaders: {
+      hsts: !!headers["strict-transport-security"],
+      csp: !!headers["content-security-policy"],
+      xFrameOptions: !!headers["x-frame-options"],
+      xContentType: !!headers["x-content-type-options"],
+      referrerPolicy: !!headers["referrer-policy"],
+      permissionsPolicy: !!headers["permissions-policy"],
+    },
+    robotsTxt: data?.robotsTxt,
+    sitemapXml: data?.sitemapXml,
+    totalIssues: issues.length,
+    criticalCount: issues.filter(i => i.severity === "critical").length,
+    highCount: issues.filter(i => i.severity === "high").length,
+    issuesByCategory,
+    failedChecks: failedStatic.map(f => ({ check: f.check, value: f.value, detail: f.detail })),
+    passedChecks: passedStatic.map(f => f.check),
+  };
+
+  return context;
+}
+
+function buildClaudePrompt(ctx) {
+  const issueLines = Object.entries(ctx.issuesByCategory).map(([cat, issues]) => {
+    return `\n### ${cat}\n` + issues.map(i =>
+      `- [${i.severity.toUpperCase()}] ${i.title}\n  Problem: ${i.description}\n  Fix: ${i.fix}`
+    ).join("\n");
+  }).join("\n");
+
+  const failedLines = ctx.failedChecks.map(f =>
+    `- ${f.check}: ${f.detail} (current value: ${f.value})`
+  ).join("\n");
+
+  return `<context>
+You are reviewing a QA audit of ${ctx.url}. The site currently scores ${ctx.score}/100 (${ctx.health}). Your job is to produce exact, production-ready fixes that will bring the score to 100/100.
+</context>
+
+<audit_results>
+URL: ${ctx.url}
+Current score: ${ctx.score}/100
+Health: ${ctx.health}
+HTTP status: ${ctx.httpStatus} | Response time: ${ctx.responseTime}ms
+HTTPS: ${ctx.https ? "✓ enabled" : "✗ NOT enabled — critical"}
+Total issues: ${ctx.totalIssues} (${ctx.criticalCount} critical, ${ctx.highCount} high)
+
+Security headers status:
+- HSTS: ${ctx.securityHeaders.hsts ? "✓ present" : "✗ MISSING"}
+- CSP: ${ctx.securityHeaders.csp ? "✓ present" : "✗ MISSING"}
+- X-Frame-Options: ${ctx.securityHeaders.xFrameOptions ? "✓ present" : "✗ MISSING"}
+- X-Content-Type-Options: ${ctx.securityHeaders.xContentType ? "✓ present" : "✗ MISSING"}
+- Referrer-Policy: ${ctx.securityHeaders.referrerPolicy ? "✓ present" : "✗ MISSING"}
+- Permissions-Policy: ${ctx.securityHeaders.permissionsPolicy ? "✓ present" : "✗ MISSING"}
+
+robots.txt: ${ctx.robotsTxt ? "✓ found" : "✗ missing"}
+sitemap.xml: ${ctx.sitemapXml ? "✓ found" : "✗ missing"}
+</audit_results>
+
+<issues_to_fix>
+${issueLines}
+</issues_to_fix>
+
+<static_analysis_failures>
+${failedLines || "None"}
+</static_analysis_failures>
+
+<passing_checks>
+${ctx.passedChecks.join(", ") || "None"}
+</passing_checks>
+
+<instructions>
+For EACH issue above, provide the exact fix. Format your response as:
+
+## Fix 1: [Issue Title]
+**Why it matters:** [one sentence]
+**Exact fix:**
+\`\`\`[language]
+[production-ready code or configuration]
+\`\`\`
+**Verification:** How to confirm this fix brings this check to 100%
+
+After all fixes, provide:
+## Complete <head> section
+A fully corrected <head> block incorporating all meta, SEO, and security fixes.
+
+## Server configuration
+Any required server headers (nginx/Apache/Netlify/Vercel config) to add missing security headers.
+
+The goal is a site that scores 100/100 when re-scanned by ShieldQA. Be exact. No placeholders. Real values where possible.
+</instructions>`;
+}
+
+function buildGPTPrompt(ctx) {
+  const issueLines = Object.entries(ctx.issuesByCategory).map(([cat, issues]) => {
+    return `\n**${cat}**\n` + issues.map(i =>
+      `• [${i.severity.toUpperCase()}] ${i.title}: ${i.description}`
+    ).join("\n");
+  }).join("\n");
+
+  const failedLines = ctx.failedChecks.map(f =>
+    `• ${f.check}: ${f.detail}`
+  ).join("\n");
+
+  return `You are a web developer helping fix a website that scored ${ctx.score}/100 on a QA audit. I need you to fix every issue so it scores 100/100.
+
+**Site:** ${ctx.url}
+**Current Score:** ${ctx.score}/100 | Health: ${ctx.health}
+**Total Issues:** ${ctx.totalIssues} (${ctx.criticalCount} critical, ${ctx.highCount} high)
+
+---
+
+**ISSUES FOUND:**
+${issueLines}
+
+---
+
+**FAILED STATIC CHECKS:**
+${failedLines || "None"}
+
+---
+
+**SECURITY HEADERS STATUS:**
+${Object.entries(ctx.securityHeaders).map(([k, v]) => `• ${k}: ${v ? "✓ OK" : "✗ MISSING — needs to be added"}`).join("\n")}
+
+**Other:**
+• robots.txt: ${ctx.robotsTxt ? "✓ exists" : "✗ missing — needs to be created"}
+• sitemap.xml: ${ctx.sitemapXml ? "✓ exists" : "✗ missing — needs to be created"}
+
+---
+
+**WHAT I NEED FROM YOU:**
+
+For each issue, give me:
+1. The exact code fix (no placeholders, real values)
+2. Where in the codebase to put it
+3. How to verify it's fixed
+
+Then provide:
+- A complete corrected \`<head>\` section with all SEO, meta, and social tags fixed
+- The exact server config (nginx / Apache / Netlify \`_headers\` file / \`netlify.toml\` / \`vercel.json\`) to add all missing security headers
+- A corrected \`robots.txt\` and \`sitemap.xml\` if missing
+
+Be specific. Use real code. The goal is a 100/100 rescan.`;
+}
+
+async function generateFixPrompts() {
+  const fixContent = document.getElementById("fix-content");
+  const fixPlaceholder = document.getElementById("fix-placeholder");
+
+  fixPlaceholder.style.display = "none";
+  fixContent.classList.remove("hidden");
+  fixContent.innerHTML = `<div class="fix-generating">${pdotHtml("#9b6dff", 8)}<span>Building fix prompts from scan data...</span></div>`;
+
+  // Switch to fix tab
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+  document.getElementById("tab-fix-btn").classList.add("active");
+  document.getElementById("panel-fix").classList.add("active");
+
+  await new Promise(r => setTimeout(r, 400));
+
+  const ctx = buildFixContext();
+  const claudePrompt = buildClaudePrompt(ctx);
+  const gptPrompt = buildGPTPrompt(ctx);
+
+  const severityColor = { critical: "#ff5b7f", high: "#ff8c5b", medium: "#f5d442", low: "#5bdfb0", info: "#7eb3ff" };
+
+  fixContent.innerHTML = `
+    <div class="fix-header">
+      <div class="fix-header-bar"></div>
+      <div class="fix-header-title">Fix Prompts — ${ctx.totalIssues} issues · Score ${ctx.score}/100</div>
+      <div class="fix-header-sub">
+        Copy either prompt below and paste it directly into Claude or ChatGPT. Each prompt contains your full audit results and exact instructions to return production-ready fixes that bring your site to 100/100.
+      </div>
+    </div>
+
+    <div class="fix-issue-summary">
+      <div class="fix-issue-summary-title">ISSUES INCLUDED IN PROMPTS</div>
+      ${allIssues.map(i => {
+        const c = severityColor[i.severity] || "#7eb3ff";
+        return `<div class="fix-issue-row"><span style="font-size:9px;color:${c};border:1px solid ${c}30;padding:1px 6px;border-radius:3px;flex-shrink:0;">${i.severity.toUpperCase()}</span><span style="color:var(--text-second);">${i.category}</span><span style="color:var(--text-primary);flex:1;">${i.title}</span></div>`;
+      }).join("") || '<div style="color:var(--text-dim);font-size:11px;padding:4px 0;">No issues found — site is clean!</div>'}
+    </div>
+
+    <div class="fix-cards">
+      <div class="fix-card fix-card-claude">
+        <div class="fix-card-head">
+          <div class="fix-card-label">
+            <div class="fix-card-logo">⬡</div>
+            <div>
+              <div class="fix-card-name">Claude prompt</div>
+              <div class="fix-card-desc">Optimized for claude.ai — uses XML tags, structured context, explicit verification steps</div>
+            </div>
+          </div>
+          <button class="fix-copy-btn" id="copy-claude-btn" onclick="copyPrompt('claude')">Copy prompt</button>
+        </div>
+        <div class="fix-prompt-box" id="claude-prompt-box">${claudePrompt.replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div>
+        <button class="fix-open-btn" onclick="openInClaude()">↗ Open claude.ai</button>
+      </div>
+
+      <div class="fix-card fix-card-gpt">
+        <div class="fix-card-head">
+          <div class="fix-card-label">
+            <div class="fix-card-logo">◎</div>
+            <div>
+              <div class="fix-card-name">ChatGPT prompt</div>
+              <div class="fix-card-desc">Optimized for ChatGPT — clean markdown format, numbered fixes, explicit deliverables</div>
+            </div>
+          </div>
+          <button class="fix-copy-btn" id="copy-gpt-btn" onclick="copyPrompt('gpt')">Copy prompt</button>
+        </div>
+        <div class="fix-prompt-box" id="gpt-prompt-box">${gptPrompt.replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div>
+        <button class="fix-open-btn" onclick="openInGPT()">↗ Open ChatGPT</button>
+      </div>
+    </div>
+  `;
+
+  // Store raw prompts for copying
+  window._claudePrompt = claudePrompt;
+  window._gptPrompt = gptPrompt;
+}
+
+function copyPrompt(type) {
+  const text = type === "claude" ? window._claudePrompt : window._gptPrompt;
+  const btnId = type === "claude" ? "copy-claude-btn" : "copy-gpt-btn";
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById(btnId);
+    if (btn) {
+      const orig = btn.textContent;
+      btn.textContent = "✓ Copied!";
+      btn.classList.add("copied");
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove("copied"); }, 2000);
+    }
+  }).catch(() => {
+    // Fallback for browsers that block clipboard
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    const btn = document.getElementById(btnId);
+    if (btn) { btn.textContent = "✓ Copied!"; setTimeout(() => btn.textContent = "Copy prompt", 2000); }
+  });
+}
+
+function openInClaude() {
+  window.open("https://claude.ai", "_blank");
+}
+
+function openInGPT() {
+  window.open("https://chat.openai.com", "_blank");
+}
+
+document.querySelectorAll(".tab-btn").forEach(btn=>{btn.addEventListener("click",()=>{
+  if(btn.dataset.tab==="fix"&&phase==="done"&&allIssues!==undefined){generateFixPrompts();return;}
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById("panel-"+btn.dataset.tab).classList.add("active");
+});});
+document.getElementById("run-btn").addEventListener("click",()=>{let v=document.getElementById("url-input").value.trim();if(!v)return;if(!v.startsWith("http"))v="https://"+v;clearInterval(timerInterval);startScan(v,currentMode);});
+document.getElementById("url-input").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("run-btn").click();});
+document.getElementById("rescan-btn").addEventListener("click",()=>{clearInterval(timerInterval);startScan(currentUrl,currentMode);});
+document.getElementById("done-btn").addEventListener("click",()=>{clearInterval(timerInterval);running=false;phase="idle";document.getElementById("dashboard").classList.add("hidden");document.getElementById("hero").classList.remove("hidden");document.getElementById("hero").style.animation="fadeIn .4s ease";document.getElementById("header-status").classList.add("hidden");document.getElementById("header-timer").classList.add("hidden");document.getElementById("fetch-status").style.display="none";document.getElementById("url-input").value="";});
+
+// ═══════════════════════════════════════════════════════════════
+// TOAST  ·  wires up the previously-unused #error-toast element
+// ═══════════════════════════════════════════════════════════════
+let _toastTimer=null;
+function showToast(msg){
+  const t=document.getElementById("error-toast");
+  if(!t)return;
+  t.textContent=msg;t.style.display="block";
+  clearTimeout(_toastTimer);
+  _toastTimer=setTimeout(()=>{t.style.display="none";},4200);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AUTH + SAVED SCANS  ·  Netlify Identity (no database to run)
+// Scan history is stored in the signed-in user's Identity profile
+// (user_metadata) — capped to the 20 most recent scans.
+// ═══════════════════════════════════════════════════════════════
+let currentUser=null;
+
+function getScans(){
+  return (currentUser&&currentUser.user_metadata&&currentUser.user_metadata.scans)||[];
+}
+
+function renderAccount(){
+  const el=document.getElementById("account");
+  if(!el)return;
+  if(currentUser){
+    const email=currentUser.email||"account";
+    el.innerHTML=`<button class="acct-btn" id="acct-toggle" title="${email}">◆ ${email}</button>`;
+    document.getElementById("acct-toggle").addEventListener("click",e=>{e.stopPropagation();toggleAcctMenu();});
+  }else{
+    el.innerHTML=`<button class="acct-btn" id="signin-btn">Sign in</button>`;
+    document.getElementById("signin-btn").addEventListener("click",()=>{
+      if(window.netlifyIdentity)window.netlifyIdentity.open();
+      else showToast("Sign-in unavailable — enable Identity on your Netlify site.");
+    });
+  }
+}
+
+function toggleAcctMenu(){
+  const el=document.getElementById("account");
+  if(el.querySelector(".acct-pop")){el.querySelector(".acct-pop").remove();return;}
+  const pop=document.createElement("div");pop.className="acct-pop";
+  const n=getScans().length;
+  pop.innerHTML=`<div class="acct-pop-head">${n} SAVED SCAN${n===1?"":"S"}</div>`;
+  const out=document.createElement("button");out.textContent="↩ Sign out";
+  out.addEventListener("click",()=>{if(window.netlifyIdentity)window.netlifyIdentity.logout();});
+  pop.appendChild(out);
+  el.appendChild(pop);
+}
+document.addEventListener("click",()=>{const p=document.querySelector(".acct-pop");if(p)p.remove();});
+
+function renderRecentScans(){
+  const el=document.getElementById("recent-scans");
+  if(!el)return;
+  const scans=getScans();
+  if(!currentUser||scans.length===0){el.classList.add("hidden");el.innerHTML="";return;}
+  el.classList.remove("hidden");
+  let h=`<div class="rs-title">Your recent scans · saved to your account</div>`;
+  scans.slice(0,8).forEach(s=>{
+    const c=s.score>=80?"#5bdfb0":s.score>=60?"#f5d442":"#ff5b7f";
+    h+=`<div class="rs-item" data-url="${encodeURIComponent(s.url)}" data-mode="${s.mode||"both"}"><span class="rs-url">${s.url}</span><span class="rs-score" style="color:${c};background:${c}18;border:1px solid ${c}35;">${s.score}</span><span class="rs-date">${s.date}</span></div>`;
+  });
+  el.innerHTML=h;
+  el.querySelectorAll(".rs-item").forEach(it=>it.addEventListener("click",()=>{
+    const u=decodeURIComponent(it.dataset.url);
+    clearInterval(timerInterval);
+    startScan(u,it.dataset.mode||currentMode);
+  }));
+}
+
+async function saveScan(url,mode){
+  if(!currentUser||!report)return;
+  try{
+    const entry={url,mode,score:report.overall_score||0,health:report.health||"unknown",
+      issues:allIssues.length,date:new Date().toISOString().slice(0,10)};
+    const next=[entry,...getScans().filter(s=>s.url!==url)].slice(0,20);
+    const updated=await currentUser.update({data:Object.assign({},currentUser.user_metadata||{},{scans:next})});
+    currentUser=updated;
+    addLog(`Scan saved to your account (${next.length} stored)`,"success");
+    renderRecentScans();
+  }catch(e){
+    addLog("Could not save scan: "+e.message,"warn");
+  }
+}
+
+function initIdentity(){
+  const id=window.netlifyIdentity;
+  if(!id){const el=document.getElementById("account");if(el)el.innerHTML="";return;}
+  id.on("init",user=>{currentUser=user||null;renderAccount();renderRecentScans();});
+  id.on("login",user=>{currentUser=user;renderAccount();renderRecentScans();id.close();});
+  id.on("logout",()=>{currentUser=null;renderAccount();renderRecentScans();});
+  id.on("error",()=>showToast("Identity error — check that Identity is enabled in Netlify."));
+  id.init();
+}
+initIdentity();
+</script>
+</body>
+</html>
