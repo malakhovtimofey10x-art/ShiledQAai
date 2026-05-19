@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sheildqa.netlify.app/sitemap.xml
+Sitemap: https://shieldqaai.netlify.app/sitemap.xml
