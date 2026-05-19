@@ -154,7 +154,7 @@ exports.handler = async function (event) {
         method: "GET",
         redirect: "follow",
         headers: {
-          "User-Agent": "Mozilla/5.0 (compatible; ShieldQA/1.0; +https://shieldqa.netlify.app)",
+          "User-Agent": "Mozilla/5.0 (compatible; ShieldQA/1.0; +https://shieldqaai.netlify.app)",
           "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
           "Accept-Language": "en-US,en;q=0.5",
           "Cache-Control": "no-cache",
