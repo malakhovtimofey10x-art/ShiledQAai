@@ -231,6 +231,16 @@
   .positive-item{display:flex;gap:10px;margin-bottom:8px;font-size:12px;color:var(--text-second);line-height:1.55}
   .positive-check{background:linear-gradient(90deg,#7eb3ff,#c4a0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;flex-shrink:0}
   .breakdown-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px 20px}
+  .score-breakdown{display:flex;flex-direction:column;gap:9px}
+  .sb-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:4px}
+  .sb-sub{font-size:10px;color:var(--text-dim);margin-top:3px;line-height:1.4}
+  .sb-grade{font-family:var(--syne);font-weight:800;font-size:26px;line-height:1;padding:8px 14px;border-radius:10px;border:1px solid;flex-shrink:0}
+  .sb-row{display:flex;align-items:center;gap:10px}
+  .sb-name{font-size:11px;color:var(--text-primary);width:104px;flex-shrink:0}
+  .sb-weight{font-size:9px;color:var(--text-dim);width:48px;flex-shrink:0;font-family:var(--mono)}
+  .sb-bar{flex:1;height:7px;background:var(--bg0);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+  .sb-fill{height:100%;border-radius:4px;transition:width .5s ease}
+  .sb-score{font-size:12px;font-weight:600;width:30px;text-align:right;flex-shrink:0;font-family:var(--mono)}
   .breakdown-label{font-size:10px;color:var(--text-dim);letter-spacing:.1em;margin-bottom:14px}
   .breakdown-grid{display:flex;gap:12px;flex-wrap:wrap}
   .breakdown-item{border-radius:10px;padding:12px 18px;min-width:80px;text-align:center;border-width:1px;border-style:solid}
@@ -363,6 +373,10 @@
   .rs-date{font-size:9px;color:var(--text-dim);flex-shrink:0}
   /* ── Ensemble model badge ── */
   .model-badge{font-size:8px;letter-spacing:.06em;padding:1px 6px;border-radius:4px;border:1px solid;flex-shrink:0}
+  #stack-info{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:14px 0 2px;font-family:var(--mono)}
+  .stack-lead{font-size:9px;letter-spacing:.11em;color:var(--text-dim);text-transform:uppercase}
+  .stack-chip{font-size:10px;padding:3px 9px;border-radius:6px;border:1px solid var(--border-hi);background:linear-gradient(135deg,rgba(79,142,247,.1),rgba(155,109,255,.1));color:var(--text-second)}
+  .stack-chip.primary{color:#7eb3ff;border-color:#7eb3ff45}
   /* ── Custom auth modal (themed — replaces the white Netlify widget) ── */
   #auth-overlay{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:rgba(3,3,10,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:20px;animation:fadeIn .2s ease}
   #auth-modal{position:relative;width:100%;max-width:380px;background:linear-gradient(180deg,var(--bg2),var(--bg1));border:1px solid var(--border-hi);border-radius:16px;padding:28px 24px 24px;box-shadow:0 24px 70px rgba(0,0,0,.6),0 0 40px rgba(79,142,247,.08);animation:slideDown .25s ease}
@@ -466,6 +480,7 @@
       </div>
     </div>
     <div id="fetch-status"><div id="fetch-status-inner"></div></div>
+    <div id="stack-info" class="hidden"></div>
     <div id="metrics" class="hidden">
       <div class="metric-card" id="score-card">
         <svg id="score-ring" width="78" height="78" style="transform:rotate(-90deg);">
@@ -555,7 +570,7 @@ const ALL_TASKS = {
 
 const SEV={critical:{color:"#ff5b7f",bg:"#1e0615",label:"CRITICAL"},high:{color:"#ff8c5b",bg:"#1e0e06",label:"HIGH"},medium:{color:"#f5d442",bg:"#1c1804",label:"MEDIUM"},low:{color:"#5bdfb0",bg:"#051a14",label:"LOW"},info:{color:"#7eb3ff",bg:"#060e22",label:"INFO"}};
 
-let phase="idle",runCount=0,allIssues=[],report=null;
+let phase="idle",runCount=0,allIssues=[],report=null,detectedStack=null;
 let running=false,currentUrl="",currentMode="both";
 let siteData=null,activeTasks=[],staticFindings=[];
 
@@ -660,6 +675,173 @@ function analyzeStatically(data){
   return findings;
 }
 
+// ── Tech-stack fingerprinting — identifies framework/CMS/hosting from real data ──
+function detectStack(data){
+  const html=data&&data.html||"",headers=data&&data.headers||{},h=html.toLowerCase();
+  const has=s=>h.indexOf(s)>-1;
+  const fw=new Set(),lib=new Set();let cms=null,hosting=null;
+
+  // Meta-frameworks
+  if(has("__next_data__")||has("/_next/")||has('id="__next"'))fw.add("Next.js");
+  if(has("__nuxt__")||has("/_nuxt/"))fw.add("Nuxt");
+  if(has("__sveltekit")||has("/_app/immutable/"))fw.add("SvelteKit");
+  if(has("/_astro/")||has("astro-island")||has("<astro-"))fw.add("Astro");
+  if(has("___gatsby")||has('id="___gatsby"'))fw.add("Gatsby");
+  if(has("__remixcontext")||has("/build/_shared/"))fw.add("Remix");
+  // Base UI frameworks
+  if(has("data-reactroot")||has("_reactlisten")||has("react-dom")||has("__reactcontainer"))fw.add("React");
+  if(fw.has("Next.js")||fw.has("Gatsby")||fw.has("Remix"))fw.add("React");
+  if(has("data-server-rendered")||has("__vue__")||/data-v-[0-9a-f]{8}/.test(h))fw.add("Vue");
+  if(fw.has("Nuxt"))fw.add("Vue");
+  if(has("ng-version")||has("_nghost")||has("<app-root"))fw.add("Angular");
+  if(/svelte-[0-9a-z]{6}/.test(h)||fw.has("SvelteKit"))fw.add("Svelte");
+  // CMS / site builders
+  if(has("/wp-content/")||has("/wp-includes/")||has("wp-json"))cms="WordPress";
+  else if(has("cdn.shopify.com")||has("shopify."))cms="Shopify";
+  else if(has("static.wixstatic.com")||has("wix-")) cms="Wix";
+  else if(has("data-wf-")||has(".webflow."))cms="Webflow";
+  else if(has("squarespace"))cms="Squarespace";
+  const genMatch=html.match(/<meta[^>]+name=["']generator["'][^>]+content=["']([^"']+)["']/i);
+  // Libraries
+  if(has("jquery"))lib.add("jQuery");
+  if(has("cdn.tailwindcss.com")||/class="[^"]*\b(sm:|md:|lg:|min-h-screen|space-y-\d|ring-\d)/.test(html))lib.add("Tailwind CSS");
+  if(has("bootstrap.min")||has("bootstrap.css"))lib.add("Bootstrap");
+  if(has("alpinejs")||/\sx-data=/.test(h))lib.add("Alpine.js");
+  if(has("fonts.googleapis.com"))lib.add("Google Fonts");
+  // Hosting (from headers)
+  const server=(headers["server"]||"").toLowerCase();
+  if(headers["x-vercel-id"]||headers["x-vercel-cache"]||server.indexOf("vercel")>-1)hosting="Vercel";
+  else if(headers["x-nf-request-id"]||server.indexOf("netlify")>-1)hosting="Netlify";
+  else if(headers["x-github-request-id"])hosting="GitHub Pages";
+  else if(headers["cf-ray"]||server.indexOf("cloudflare")>-1)hosting="Cloudflare";
+  else if(server)hosting=headers["server"];
+
+  // Rendering mode — measured from real body content
+  let rendering="unknown",bodyLen=0;
+  try{
+    const doc=new DOMParser().parseFromString(html,"text/html");
+    bodyLen=((doc.body&&doc.body.textContent)||"").replace(/\s+/g," ").trim().length;
+    const scripts=doc.querySelectorAll("script").length;
+    const metaFw=fw.has("Next.js")||fw.has("Nuxt")||fw.has("Gatsby")||fw.has("Astro")||fw.has("SvelteKit");
+    if(metaFw||cms)rendering="server-rendered";        // these emit rendered HTML
+    else if(bodyLen<400&&scripts>0)rendering="client-rendered";  // empty shell + JS = SPA
+    else if(bodyLen>=400)rendering=fw.size>0?"server-rendered":"static";
+    else rendering=fw.size>0?"client-rendered":"static";
+  }catch{}
+
+  return{frameworks:[...fw],libraries:[...lib],cms,hosting,
+    generator:genMatch?genMatch[1]:null,rendering,
+    jsRendered:rendering==="client-rendered",bodyTextLength:bodyLen};
+}
+
+function stackSummary(s){
+  if(!s)return"Plain HTML/CSS/JS";
+  const parts=[];
+  if(s.frameworks.length)parts.push(s.frameworks.join(" + "));
+  if(s.cms)parts.push(s.cms);
+  if(s.libraries.length)parts.push(s.libraries.join(", "));
+  parts.push(s.rendering);
+  if(s.hosting)parts.push("hosted on "+s.hosting);
+  return parts.filter(Boolean).join(" · ")||"Plain HTML/CSS/JS";
+}
+
+function renderingNote(s){
+  if(s&&s.jsRendered)
+    return "IMPORTANT — RENDERING: This is a CLIENT-RENDERED JavaScript app. The HTML below is only the initial shell. Forms, navigation, interactive UI and most content are generated by JavaScript AFTER load and are NOT present in this HTML. You MUST NOT report missing forms, missing UI, missing content, missing routes, or 'no API detected' as issues — you cannot see the rendered DOM.";
+  return "RENDERING: This site is server-rendered or static — the HTML below reflects what users and crawlers actually receive.";
+}
+
+function renderStackInfo(){
+  const el=document.getElementById("stack-info");
+  if(!el)return;
+  if(!detectedStack){el.classList.add("hidden");el.innerHTML="";return;}
+  el.classList.remove("hidden");
+  const chips=[];
+  detectedStack.frameworks.forEach(f=>chips.push(`<span class="stack-chip primary">${f}</span>`));
+  if(detectedStack.cms)chips.push(`<span class="stack-chip primary">${detectedStack.cms}</span>`);
+  detectedStack.libraries.forEach(l=>chips.push(`<span class="stack-chip">${l}</span>`));
+  chips.push(`<span class="stack-chip">${detectedStack.rendering}</span>`);
+  if(detectedStack.hosting)chips.push(`<span class="stack-chip">${detectedStack.hosting}</span>`);
+  if(detectedStack.frameworks.length===0&&!detectedStack.cms)chips.unshift(`<span class="stack-chip">Plain HTML/CSS/JS</span>`);
+  el.innerHTML=`<span class="stack-lead">Detected stack</span>${chips.join("")}`;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// SCORING ENGINE — deterministic, weighted, confidence-calibrated.
+// The AI finds and explains issues; this code computes every number.
+// Same issue list → same score, every time.
+// ════════════════════════════════════════════════════════════════════
+const CATEGORY_WEIGHTS={Security:26,Performance:22,SEO:20,Accessibility:18,"Best Practices":14};
+const SEVERITY_PENALTY={critical:32,high:17,medium:8,low:3};
+const SCORE_DECAY=0.82; // each successive issue in a category costs progressively less
+
+// Confidence drawn from the ensemble: issues both engines independently
+// flagged (or verified static checks) carry full weight; single-engine less.
+function confidenceWeight(source){
+  if(source==="both"||source==="static")return 1.0;
+  if(source==="claude"||source==="gpt")return 0.72;
+  return 0.85;
+}
+function confidenceLabel(source){
+  if(source==="both")return"verified by both engines";
+  if(source==="static")return"verified (static check)";
+  if(source==="claude"||source==="gpt")return"single-engine";
+  return"flagged";
+}
+
+// Map an audit category label to one of the 5 weighted scoring categories.
+function scoreCategoryOf(label){
+  const s=String(label||"").toLowerCase();
+  if(/secur|auth|input|ssl|csp|xss|csrf|header|form/.test(s))return"Security";
+  if(/perf|speed|load|cache|size|bundle|render/.test(s))return"Performance";
+  if(/seo|crawl|meta|sitemap|robots|schema|index/.test(s))return"SEO";
+  if(/access|a11y|aria|mobile|contrast|alt|wcag/.test(s))return"Accessibility";
+  return"Best Practices";
+}
+
+// Flat issue list → 0-100. Severity-weighted, confidence-weighted,
+// with diminishing returns so 10 minor issues never equal one critical.
+function deductionScore(issues){
+  if(!issues||issues.length===0)return 100;
+  const sorted=[...issues].sort((a,b)=>(SEVERITY_PENALTY[b.severity]||0)-(SEVERITY_PENALTY[a.severity]||0));
+  let total=0;
+  sorted.forEach((iss,i)=>{
+    const base=SEVERITY_PENALTY[iss.severity]||SEVERITY_PENALTY.low;
+    total+=base*confidenceWeight(iss.source)*Math.pow(SCORE_DECAY,i);
+  });
+  return Math.max(0,Math.round(100-total));
+}
+
+function gradeFor(s){
+  if(s>=97)return"A+";if(s>=93)return"A";if(s>=90)return"A-";
+  if(s>=87)return"B+";if(s>=83)return"B";if(s>=80)return"B-";
+  if(s>=77)return"C+";if(s>=73)return"C";if(s>=70)return"C-";
+  if(s>=60)return"D";return"F";
+}
+function gradeColor(s){return s>=83?"#5bdfb0":s>=70?"#f5d442":s>=60?"#ff8c5b":"#ff5b7f";}
+
+// Full weighted roll-up across the 5 categories.
+function computeScore(issues){
+  const buckets={};
+  Object.keys(CATEGORY_WEIGHTS).forEach(c=>buckets[c]=[]);
+  (issues||[]).forEach(iss=>{
+    const c=scoreCategoryOf(iss.category);
+    (buckets[c]||buckets["Best Practices"]).push(iss);
+  });
+  let weightedSum=0,weightTotal=0;
+  const categories=Object.keys(CATEGORY_WEIGHTS).map(c=>{
+    const list=buckets[c],score=deductionScore(list),weight=CATEGORY_WEIGHTS[c];
+    weightedSum+=score*weight;weightTotal+=weight;
+    return{name:c,weight,score,issueCount:list.length,
+      critical:list.filter(i=>i.severity==="critical").length,
+      high:list.filter(i=>i.severity==="high").length};
+  });
+  const overall=Math.round(weightedSum/weightTotal);
+  return{overall,grade:gradeFor(overall),
+    health:overall>=85?"healthy":overall>=60?"degraded":"critical",
+    categories};
+}
+
 function renderRawData(data,findings){
   const box=document.getElementById("raw-box");
   if(!data){box.innerHTML=`<div style="color:var(--text-dim);text-align:center;padding:40px;">No data yet</div>`;return;}
@@ -707,26 +889,36 @@ async function runAgentTask(url,task,data,findings){
     else if(task.id==="ui"){htmlSnippet=html.slice(0,2500);}
   }catch{}
 
-  const sys=`You are a senior QA engineer doing a real technical audit. You have ACTUAL fetched data. Be specific and harsh. Never give generic answers. Base everything on the real data provided. Do not make things up.`;
+  const stackLine=stackSummary(detectedStack);
+  const sys=`You are a senior QA engineer performing a real technical audit from ACTUAL fetched data: raw server HTML, real HTTP response headers, and verified static checks.
+
+NON-NEGOTIABLE RULES:
+1. Report ONLY issues you can directly verify from the data provided. Every issue must cite concrete evidence — a specific header value, a specific tag, or a specific static check marked FAIL.
+2. NEVER speculate. Banned in findings: "likely", "probably", "may", "might", "appears", "seems", "unverified", "no evidence", "cannot confirm", "suggests", "could be". If the data does not let you verify it, DO NOT report it at all.
+3. Static checks marked PASS are verified correct — never report them as problems. Static checks marked FAIL are verified real issues — include them.
+4. A genuinely correct category scores 100 with an empty issues array. Do NOT invent issues to appear thorough. A generic best-practice note is not an issue unless it causes real, demonstrable harm to THIS specific site.
+5. The "issues" array is for real problems only (severity critical/high/medium/low). Never put passing or informational notes in it.
+6. Tailor every fix to the detected tech stack — give framework-specific code and configuration, never generic advice.`;
   const usr=`DEEP QA ANALYSIS: "${task.label}"
 URL: ${url}
 HTTP: ${data?.status} in ${data?.responseTime}ms | HTTPS: ${data?.url?.startsWith("https")?"yes":"no"}
+DETECTED STACK: ${stackLine}
+${renderingNote(detectedStack)}
 
-REAL STATIC FINDINGS FOR THIS CATEGORY:
-${taskFindings.map(f=>`${f.pass?"PASS":"FAIL"} — ${f.check}: ${f.detail} [${f.value}]`).join("\n")||"No specific findings for this category"}
+VERIFIED STATIC FINDINGS FOR THIS CATEGORY (ground truth — trust these completely):
+${taskFindings.map(f=>`${f.pass?"PASS":"FAIL"} — ${f.check}: ${f.detail} [${f.value}]`).join("\n")||"No specific static findings for this category"}
 
-RESPONSE HEADERS SAMPLE:
+RESPONSE HEADERS (verified):
 ${Object.entries(headers).slice(0,15).map(([k,v])=>`${k}: ${v}`).join("\n")}
 
-${htmlSnippet?`ACTUAL HTML SNIPPET:\n${htmlSnippet}`:""}
+${htmlSnippet?`RAW HTML SNIPPET (initial server response only):\n${htmlSnippet}`:""}
 
-Subtasks: ${task.subtasks.join(", ")}
+Subtasks to consider: ${task.subtasks.join(", ")}
 
-SCORING: Start at 100. Deduct: critical=-25, high=-15, medium=-8, low=-3.
-If static findings show failures, score MUST reflect this. A site with 3 FAIL static checks CANNOT score 75.
+SCORING: Start at 100. Deduct ONLY for verified issues — critical -25, high -15, medium -8, low -3. Every static FAIL is a real deduction. Zero verified issues = score 100, status "pass". If all static checks PASS and nothing else is verifiably wrong, the score is 100.
 
 Return ONLY this JSON (no other text):
-{"status":"pass"|"fail"|"warning","score":<integer 0-100>,"issues":[{"severity":"critical"|"high"|"medium"|"low"|"info","title":"<specific title>","description":"<exact problem with evidence from the real data>","reproduction":"<exact steps>","fix":"<specific code or config>"}],"summary":"<one sentence with specific details from real data>"}`;
+{"status":"pass"|"fail"|"warning","score":<integer 0-100>,"issues":[{"severity":"critical"|"high"|"medium"|"low","title":"<specific title>","description":"<exact problem with concrete evidence from the data>","reproduction":"<exact steps>","fix":"<exact code or config tailored to ${stackLine}>"}],"summary":"<one sentence grounded in the real data>"}`;
 
   try{
     // ── Stage 1: Claude performs the primary analysis ──
@@ -736,7 +928,12 @@ Return ONLY this JSON (no other text):
 
     if(primary){
       // ── Stage 2: ChatGPT peer-reviews and consolidates Claude's analysis ──
-      const reviewSys=`You are a second senior QA engineer peer-reviewing a colleague's audit. Base every judgment on the real data provided. Be rigorous: confirm correct findings, delete false positives, add anything genuinely missed.`;
+      const reviewSys=`You are a second senior QA engineer peer-reviewing a colleague's audit. Apply these rules strictly:
+- DELETE any finding that is speculative or not verifiable from the provided data (anything hedged with "likely", "may", "appears", "no evidence", "unverified", "could", etc.).
+- DELETE any finding about missing forms, missing UI, missing content, or missing routes if the site is client-rendered — that content is not in the HTML and its absence is not a defect.
+- DELETE any finding that contradicts a static check marked PASS.
+- KEEP and confirm only evidence-backed issues. Add a genuinely missed issue ONLY if you can cite concrete evidence for it.
+- If after review there are zero verified issues, return an empty issues array and score 100.`;
       const reviewUsr=`${usr}
 
 ──────────────────────────────
@@ -767,18 +964,19 @@ For each issue, set "source" to "both" if you agree with the first engineer's fi
     if(result){
       result.engines=engines||["Claude"];
       const tagger=(consolidated&&primary)?tagSource:(primary?(()=>"claude"):(()=>"gpt"));
-      result.issues=(result.issues||[]).map(i=>({...i,source:tagger(i)}));
-      // Validate score is grounded — recalculate if suspiciously generic
-      const failedChecks=taskFindings.filter(f=>!f.pass).length;
-      if(result.score===75&&failedChecks>0)result.score=Math.max(20,100-(failedChecks*12));
+      // issues array = real problems only; informational notes never count
+      result.issues=(result.issues||[]).filter(i=>i.severity&&i.severity!=="info").map(i=>({...i,source:tagger(i)}));
+      // Score is COMPUTED from the issue list — the AI never picks the number.
+      result.score=deductionScore(result.issues);
+      result.status=result.score>=85?"pass":result.score>=60?"warning":"fail";
       return result;
     }
     throw new Error("both AI engines failed");
   }catch(e){
     addLog("AI analysis fell back to static for "+task.label+": "+e.message,"error");
-    const failed=taskFindings.filter(f=>!f.pass).length;
-    const score=Math.max(20,100-(failed*12));
-    return{status:failed>2?"fail":failed>0?"warning":"pass",score,engines:["static"],issues:taskFindings.filter(f=>!f.pass).map(f=>({severity:f.check.includes("HTTPS")||f.check.includes("CSP")||f.check.includes("HSTS")?"high":"medium",title:f.check+" — "+f.value,description:f.detail,reproduction:"Check page source or response headers",fix:"Fix: "+f.check,source:"static"})),summary:`${taskFindings.filter(f=>f.pass).length}/${taskFindings.length} checks passed`};
+    const issues=taskFindings.filter(f=>!f.pass).map(f=>({severity:f.check.includes("HTTPS")||f.check.includes("CSP")||f.check.includes("HSTS")?"high":"medium",title:f.check+" — "+f.value,description:f.detail,reproduction:"Check page source or response headers",fix:"Fix: "+f.check,source:"static"}));
+    const score=deductionScore(issues);
+    return{status:score>=85?"pass":score>=60?"warning":"fail",score,engines:["static"],issues,summary:`${taskFindings.filter(f=>f.pass).length}/${taskFindings.length} checks passed`};
   }
 }
 
@@ -790,21 +988,43 @@ async function generateFullReport(url,taskResults,mode,data,findings){
   const highCount=issues.filter(i=>i.severity==="high").length;
   const usr=`Final QA report for: ${url}
 Mode: ${mode} | HTTP: ${data?.status} in ${data?.responseTime}ms | HTTPS: ${data?.url?.startsWith("https")?"yes":"no"}
-Static analysis: ${passed}/${total} passed
-Average score: ${avgScore}/100
-Critical issues: ${critCount} | High: ${highCount}
+Detected stack: ${stackSummary(detectedStack)}
+Verified static analysis: ${passed}/${total} checks passed
+Average category score: ${avgScore}/100
+Verified issues — critical: ${critCount} | high: ${highCount} | total: ${issues.length}
 
 Task results:
 ${taskResults.map(t=>`${t.task.label}: score=${t.result?.score} status=${t.result?.status} — ${t.result?.summary}`).join("\n")}
 
-Issues (${issues.length}):
+Verified issues (${issues.length}):
 ${issues.map(i=>`[${i.severity.toUpperCase()}] ${i.category}: ${i.title}`).join("\n")||"none"}
 
 Return ONLY JSON:
-{"overall_score":<integer, weighted by real data, NOT 75>,"health":"healthy"|"degraded"|"critical","headline":"<specific punchy summary with real finding>","top_priority":"<most impactful fix with specific detail>","next_run_recommendation":"<specific advice>","positive_findings":["<actual passing thing>","<another>"]}
+{"overall_score":<integer reflecting ONLY verified issues>,"health":"healthy"|"degraded"|"critical","headline":"<specific punchy summary grounded in a real finding>","top_priority":"<most impactful real fix>","next_run_recommendation":"<specific advice>","positive_findings":["<an actual verified passing thing>","<another>"]}
 
-Score rules: <50=critical, 50-69=degraded, 70-84=degraded, 85+=healthy. Must match real data.`;
-  const sysR="Senior QA engineer. JSON only. Base on real data.";
+Scoring: zero verified issues = overall_score 100, health healthy. Otherwise <50 critical, 50-84 degraded, 85+ healthy. The score reflects ONLY verified issues — never inflate, never deflate.`;
+  const sysR="Senior QA engineer producing a final report strictly from verified audit data. JSON only. Never speculate. The score reflects only verified issues — zero verified issues means a score of 100.";
+  // Verified clean — every category passed with no real issues: a genuine 100
+  if(issues.length===0){
+    return{overall_score:100,health:"healthy",
+      headline:"No verified issues — every audited category passed.",
+      top_priority:"Nothing critical to fix. Maintain the current configuration.",
+      next_run_recommendation:"Re-audit after your next deploy to catch any regressions.",
+      positive_findings:taskResults.filter(t=>t.result?.status==="pass").map(t=>t.task.label+" passed").slice(0,6),
+      engines:["Claude","ChatGPT"]};
+  }
+  // ── Deterministic weighted score — computed here, never picked by the AI ──
+  const sc=computeScore(issues);
+
+  // Verified clean — every category passed with no real issues: a genuine 100
+  if(issues.length===0){
+    return{overall_score:100,grade:"A+",health:"healthy",breakdown:sc.categories,
+      headline:"No verified issues — every audited category passed.",
+      top_priority:"Nothing critical to fix. Maintain the current configuration.",
+      next_run_recommendation:"Re-audit after your next deploy to catch any regressions.",
+      positive_findings:taskResults.filter(t=>t.result?.status==="pass").map(t=>t.task.label+" passed").slice(0,6),
+      engines:["Claude","ChatGPT"]};
+  }
   const [cR,gR]=await Promise.allSettled([
     callClaude(sysR,usr,1000),
     callGPT(sysR,usr,1000),
@@ -812,18 +1032,16 @@ Score rules: <50=critical, 50-69=degraded, 70-84=degraded, 85+=healthy. Must mat
   let cr=null,gr=null;
   if(cR.status==="fulfilled"){try{cr=parseJSON(cR.value);}catch{}}
   if(gR.status==="fulfilled"){try{gr=parseJSON(gR.value);}catch{}}
-  const fixScore=r=>{if(r&&r.overall_score===75&&critCount>0)r.overall_score=Math.max(25,75-(critCount*15)-(highCount*8));return r;};
-  cr=fixScore(cr);gr=fixScore(gr);
-  if(cr&&gr){
-    const score=Math.round(((cr.overall_score||0)+(gr.overall_score||0))/2);
-    const pf=[...new Set([...(cr.positive_findings||[]),...(gr.positive_findings||[])])].slice(0,6);
-    return{overall_score:score,health:score<50?"critical":score<85?"degraded":"healthy",
-      headline:cr.headline||gr.headline,top_priority:cr.top_priority||gr.top_priority,
-      next_run_recommendation:cr.next_run_recommendation||gr.next_run_recommendation,
-      positive_findings:pf,engines:["Claude","ChatGPT"]};
-  }
-  if(cr||gr){const r=cr||gr;r.engines=[cr?"Claude":"ChatGPT"];return r;}
-  return{overall_score:avgScore,health:avgScore>=85?"healthy":avgScore>=60?"degraded":"critical",headline:`${issues.length} issues found — score ${avgScore}/100`,top_priority:issues[0]?`Fix: ${issues[0].title}`:"No critical issues",next_run_recommendation:"Run again after addressing high priority items",positive_findings:taskResults.filter(t=>t.result?.status==="pass").map(t=>t.task.label+" passed"),engines:["static"]};
+  // The AI provides the narrative; the SCORE is the computed weighted value.
+  const prose=cr||gr||{};
+  return{
+    overall_score:sc.overall,grade:sc.grade,health:sc.health,breakdown:sc.categories,
+    headline:prose.headline||`${issues.length} issue(s) found across ${sc.categories.filter(c=>c.issueCount>0).length} categories.`,
+    top_priority:prose.top_priority||(issues[0]?`Fix: ${issues[0].title}`:"Address the highest-severity issues first."),
+    next_run_recommendation:prose.next_run_recommendation||"Re-audit after addressing the high-severity items.",
+    positive_findings:[...new Set([...(cr&&cr.positive_findings||[]),...(gr&&gr.positive_findings||[])])].slice(0,6),
+    engines:cr&&gr?["Claude","ChatGPT"]:[cr?"Claude":gr?"ChatGPT":"computed"],
+  };
 }
 
 function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
@@ -933,6 +1151,16 @@ function renderReport(){
   placeholder.style.display="none";content.classList.remove("hidden");content.innerHTML="";
   const hc=document.createElement("div");hc.className="report-card";hc.innerHTML=`<div class="report-card-bar"></div><div class="report-label">${(report.engines||["AI"]).join(" + ").toUpperCase()} ASSESSMENT — ${currentMode.toUpperCase()} SCAN · REAL HTTP DATA</div><p class="report-headline">${report.headline}</p><p class="report-rec">${report.next_run_recommendation}</p>`;content.appendChild(hc);
   if(report.top_priority){const pc=document.createElement("div");pc.className="priority-card";pc.innerHTML=`<span class="priority-icon">🎯</span><div><div class="priority-label">TOP PRIORITY</div><p class="priority-text">${report.top_priority}</p></div>`;content.appendChild(pc);}
+  if(report.breakdown&&report.breakdown.length){
+    const sb=document.createElement("div");sb.className="report-card score-breakdown";
+    const gc=gradeColor(report.overall_score);
+    let sh=`<div class="report-card-bar"></div><div class="sb-head"><div><div class="report-label">WEIGHTED SCORE BREAKDOWN</div><div class="sb-sub">Each category scored from verified issues, then weighted into the overall.</div></div><div class="sb-grade" style="color:${gc};border-color:${gc}45;background:${gc}12;">${report.grade||gradeFor(report.overall_score)}</div></div>`;
+    report.breakdown.forEach(c=>{
+      const col=gradeColor(c.score);
+      sh+=`<div class="sb-row"><span class="sb-name">${c.name}</span><span class="sb-weight">${c.weight}% wt</span><div class="sb-bar"><div class="sb-fill" style="width:${c.score}%;background:${col};"></div></div><span class="sb-score" style="color:${col};">${c.score}</span></div>`;
+    });
+    sb.innerHTML=sh;content.appendChild(sb);
+  }
   if(report.positive_findings?.length>0){const pos=document.createElement("div");pos.className="positives-card";let h=`<div class="positives-label">WHAT'S WORKING</div>`;report.positive_findings.forEach(f=>{h+=`<div class="positive-item"><span class="positive-check">✓</span><span>${f}</span></div>`;});pos.innerHTML=h;content.appendChild(pos);}
   const bc=document.createElement("div");bc.className="breakdown-card";let bh=`<div class="breakdown-label">ISSUE BREAKDOWN</div><div class="breakdown-grid">`;
   ["critical","high","medium","low"].forEach(sev=>{const s=SEV[sev],count=allIssues.filter(i=>i.severity===sev).length;bh+=`<div class="breakdown-item" style="background:${s.bg};border-color:${s.color}25;box-shadow:0 0 14px ${s.color}14;"><div class="breakdown-num" style="color:${s.color};text-shadow:0 0 16px ${s.color}80;">${count}</div><div class="breakdown-name" style="color:${s.color};">${sev}</div></div>`;});
@@ -942,7 +1170,7 @@ function renderReport(){
 async function startScan(targetUrl,mode){
   if(running)return;
   running=true;phase="running";currentUrl=targetUrl;currentMode=mode;
-  allIssues=[];report=null;siteData=null;staticFindings=[];runCount++;
+  allIssues=[];report=null;siteData=null;staticFindings=[];detectedStack=null;runCount++;
   activeTasks=ALL_TASKS[mode]||ALL_TASKS.both;
 
   document.getElementById("hero").classList.add("hidden");
@@ -957,6 +1185,7 @@ async function startScan(targetUrl,mode){
   document.getElementById("header-status-text").textContent="scanning";
   setDotColor(document.getElementById("header-dot"),"#4f8ef7");
   document.getElementById("metrics").classList.add("hidden");
+  document.getElementById("stack-info").classList.add("hidden");
   document.getElementById("report-placeholder").textContent="Scan in progress...";
   document.getElementById("report-placeholder").style.display="block";
   document.getElementById("report-content").classList.add("hidden");
@@ -992,8 +1221,13 @@ async function startScan(targetUrl,mode){
   }
 
   // PHASE 2: Static analysis
+  // PHASE 2: Static analysis + stack detection
   addLog("Running static analysis on real HTML...","data");
   staticFindings=analyzeStatically(siteData);
+  detectedStack=detectStack(siteData);
+  renderStackInfo();
+  addLog(`Stack detected — ${stackSummary(detectedStack)}`,"data");
+  if(detectedStack.jsRendered)addLog("Client-rendered app — audit weighted to skip JS-only DOM checks","info");
   const passed=staticFindings.filter(f=>f.pass).length;
   const failed=staticFindings.filter(f=>!f.pass).length;
   addLog(`Static: ${passed}/${staticFindings.length} passed — ${failed} issue(s) detected`,"data");
@@ -1432,6 +1666,9 @@ function loadSavedAudit(a){
   });
 
   document.getElementById("raw-box").innerHTML=`<div style="color:var(--text-dim);text-align:center;padding:40px;line-height:1.6;">Live HTTP data isn't kept for saved audits.<br>Use Rescan to capture fresh raw data.</div>`;
+  const si=document.getElementById("stack-info");
+  if(a.stack){si.classList.remove("hidden");si.innerHTML=`<span class="stack-lead">Detected stack</span><span class="stack-chip primary">${a.stack}</span>`;}
+  else si.classList.add("hidden");
   document.getElementById("fix-placeholder").style.display="block";
   document.getElementById("fix-content").classList.add("hidden");
   document.getElementById("fix-content").innerHTML="";
@@ -1476,7 +1713,9 @@ async function saveScan(url,mode){
       severity:i.severity,title:trimText(i.title,120),category:i.category,source:i.source,
       description:trimText(i.description,200),reproduction:trimText(i.reproduction,200),fix:trimText(i.fix,200)}));
     const snap={url,mode,date:new Date().toISOString().slice(0,10),ts:Date.now(),
-      report:{overall_score:report.overall_score,health:report.health,headline:report.headline,
+      stack:stackSummary(detectedStack),
+      report:{overall_score:report.overall_score,grade:report.grade,health:report.health,
+        headline:report.headline,breakdown:report.breakdown,
         top_priority:report.top_priority,next_run_recommendation:report.next_run_recommendation,
         positive_findings:(report.positive_findings||[]).slice(0,6),engines:report.engines||["AI"]},
       issues};
