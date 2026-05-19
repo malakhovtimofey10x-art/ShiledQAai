@@ -360,6 +360,7 @@
   .rs-item:hover{border-color:var(--border-hi);background:var(--bg3)}
   .rs-url{flex:1;font-size:11px;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .rs-score{font-size:11px;font-weight:500;padding:2px 8px;border-radius:5px;flex-shrink:0}
+  .rs-delta{font-size:9px;font-weight:500;flex-shrink:0;font-family:var(--mono)}
   .rs-date{font-size:9px;color:var(--text-dim);flex-shrink:0}
   /* ── Ensemble model badge ── */
   .model-badge{font-size:8px;letter-spacing:.06em;padding:1px 6px;border-radius:4px;border:1px solid;flex-shrink:0}
@@ -414,10 +415,6 @@
       <div id="header-status" class="hidden" style="display:flex;align-items:center;gap:7px;">
         <span class="pdot" id="header-dot" style="width:7px;height:7px;"><span class="pdot-ring" style="background:#4f8ef7;"></span><span class="pdot-core" style="background:#4f8ef7;"></span></span>
         <span id="header-status-text" style="color:var(--text-dim);">scanning</span>
-      </div>
-      <div id="header-timer" class="hidden" style="display:flex;align-items:center;gap:7px;">
-        <span style="color:var(--text-dim);">next</span>
-        <span id="header-timer-val" class="grad-text" style="font-weight:500;"></span>
       </div>
       <div id="account" class="acct-menu"></div>
     </div>
@@ -560,7 +557,7 @@ const ALL_TASKS = {
 const SEV={critical:{color:"#ff5b7f",bg:"#1e0615",label:"CRITICAL"},high:{color:"#ff8c5b",bg:"#1e0e06",label:"HIGH"},medium:{color:"#f5d442",bg:"#1c1804",label:"MEDIUM"},low:{color:"#5bdfb0",bg:"#051a14",label:"LOW"},info:{color:"#7eb3ff",bg:"#060e22",label:"INFO"}};
 
 let phase="idle",runCount=0,allIssues=[],report=null;
-let timerInterval=null,running=false,currentUrl="",currentMode="both";
+let running=false,currentUrl="",currentMode="both";
 let siteData=null,activeTasks=[],staticFindings=[];
 
 document.querySelectorAll(".mode-btn").forEach(btn=>{
@@ -941,15 +938,6 @@ function renderReport(){
   const bc=document.createElement("div");bc.className="breakdown-card";let bh=`<div class="breakdown-label">ISSUE BREAKDOWN</div><div class="breakdown-grid">`;
   ["critical","high","medium","low"].forEach(sev=>{const s=SEV[sev],count=allIssues.filter(i=>i.severity===sev).length;bh+=`<div class="breakdown-item" style="background:${s.bg};border-color:${s.color}25;box-shadow:0 0 14px ${s.color}14;"><div class="breakdown-num" style="color:${s.color};text-shadow:0 0 16px ${s.color}80;">${count}</div><div class="breakdown-name" style="color:${s.color};">${sev}</div></div>`;});
   bh+="</div>";bc.innerHTML=bh;content.appendChild(bc);
-  const tc=document.createElement("div");tc.className="timer-card";tc.innerHTML=`<div class="timer-left">${pdotHtml("#9b6dff",7)}<span class="timer-label">Next auto-scan in</span></div><span class="timer-value" id="report-timer-val">15:00</span>`;content.appendChild(tc);
-}
-
-function startCountdown(targetUrl){
-  clearInterval(timerInterval);let secs=15*60;
-  document.getElementById("header-timer").classList.remove("hidden");document.getElementById("header-timer").style.display="flex";
-  const hv=document.getElementById("header-timer-val");
-  const tick=()=>{const f=fmt(secs);if(hv)hv.textContent=f;const rv=document.getElementById("report-timer-val");if(rv)rv.textContent=f;secs--;if(secs<0){clearInterval(timerInterval);addLog("Auto-scan triggered","system");startScan(targetUrl,currentMode);}};
-  tick();timerInterval=setInterval(tick,1000);
 }
 
 async function startScan(targetUrl,mode){
@@ -969,7 +957,6 @@ async function startScan(targetUrl,mode){
   const hs=document.getElementById("header-status");hs.classList.remove("hidden");hs.style.display="flex";
   document.getElementById("header-status-text").textContent="scanning";
   setDotColor(document.getElementById("header-dot"),"#4f8ef7");
-  document.getElementById("header-timer").classList.add("hidden");
   document.getElementById("metrics").classList.add("hidden");
   document.getElementById("report-placeholder").textContent="Scan in progress...";
   document.getElementById("report-placeholder").style.display="block";
@@ -983,6 +970,7 @@ async function startScan(targetUrl,mode){
   document.getElementById("tab-fix-btn").style.color="#c4a0ff";
   document.getElementById("raw-box").innerHTML=`<div style="color:var(--text-dim);text-align:center;padding:40px;">Fetching real site data...</div>`;
   buildTaskGrid();document.getElementById("logs-inner").innerHTML="";
+  activateTab("tasks");
 
   addLog(`Scan started — mode: ${mode.toUpperCase()} — target: ${targetUrl}`,"system");
   addLog(`${activeTasks.length} test categories queued`,"info");
@@ -1046,8 +1034,7 @@ async function startScan(targetUrl,mode){
   document.getElementById("header-status-text").textContent=`run #${runCount} — score ${report.overall_score}`;
   setDotColor(document.getElementById("header-dot"),"#5bdfb0");
   setDotColor(document.getElementById("log-dot"),"#9b6dff");
-  addLog("Next scan in 15:00","system");
-  startCountdown(targetUrl);
+  addLog("Audit complete — request another anytime.","system");
 }
 
 
@@ -1056,8 +1043,8 @@ async function startScan(targetUrl,mode){
 // ═══════════════════════════════════════════════════════════════
 function buildFixContext() {
   const issues = allIssues;
-  const findings = staticFindings;
-  const data = siteData;
+  const findings = staticFindings || [];
+  const data = siteData || {};
   const headers = data?.headers || {};
 
   const issuesByCategory = {};
@@ -1338,10 +1325,10 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{btn.addEventListener("click"
   btn.classList.add("active");
   document.getElementById("panel-"+btn.dataset.tab).classList.add("active");
 });});
-document.getElementById("run-btn").addEventListener("click",()=>{let v=document.getElementById("url-input").value.trim();if(!v)return;if(!v.startsWith("http"))v="https://"+v;clearInterval(timerInterval);startScan(v,currentMode);});
+document.getElementById("run-btn").addEventListener("click",()=>{let v=document.getElementById("url-input").value.trim();if(!v)return;if(!v.startsWith("http"))v="https://"+v;startScan(v,currentMode);});
 document.getElementById("url-input").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("run-btn").click();});
-document.getElementById("rescan-btn").addEventListener("click",()=>{clearInterval(timerInterval);startScan(currentUrl,currentMode);});
-document.getElementById("done-btn").addEventListener("click",()=>{clearInterval(timerInterval);running=false;phase="idle";document.getElementById("dashboard").classList.add("hidden");document.getElementById("hero").classList.remove("hidden");document.getElementById("hero").style.animation="fadeIn .4s ease";document.getElementById("header-status").classList.add("hidden");document.getElementById("header-timer").classList.add("hidden");document.getElementById("fetch-status").style.display="none";document.getElementById("url-input").value="";});
+document.getElementById("rescan-btn").addEventListener("click",()=>{startScan(currentUrl,currentMode);});
+document.getElementById("done-btn").addEventListener("click",()=>{running=false;phase="idle";document.getElementById("dashboard").classList.add("hidden");document.getElementById("hero").classList.remove("hidden");document.getElementById("hero").style.animation="fadeIn .4s ease";document.getElementById("header-status").classList.add("hidden");document.getElementById("fetch-status").style.display="none";document.getElementById("url-input").value="";});
 
 // ═══════════════════════════════════════════════════════════════
 // TOAST  ·  wires up the previously-unused #error-toast element
@@ -1366,8 +1353,8 @@ let currentUser=null;
 let authState="login",authError="",authMessage="",authBusy=false;
 const authValues={email:"",password:"",name:""};
 
-function getScans(){
-  return (currentUser&&currentUser.user_metadata&&currentUser.user_metadata.scans)||[];
+function getAudits(){
+  return (currentUser&&currentUser.user_metadata&&currentUser.user_metadata.audits)||[];
 }
 
 function displayName(){
@@ -1392,8 +1379,8 @@ function toggleAcctMenu(){
   const el=document.getElementById("account");
   if(el.querySelector(".acct-pop")){el.querySelector(".acct-pop").remove();return;}
   const pop=document.createElement("div");pop.className="acct-pop";
-  const n=getScans().length;
-  pop.innerHTML=`<div class="acct-pop-head">${n} SAVED SCAN${n===1?"":"S"}</div>`;
+  const n=getAudits().length;
+  pop.innerHTML=`<div class="acct-pop-head">${n} SAVED AUDIT${n===1?"":"S"}</div>`;
   const hasName=!!((currentUser&&currentUser.user_metadata&&currentUser.user_metadata.full_name)||"").trim();
   const nameBtn=document.createElement("button");
   nameBtn.textContent=hasName?"✎ Edit name":"✎ Set your name";
@@ -1406,36 +1393,100 @@ function toggleAcctMenu(){
 }
 document.addEventListener("click",()=>{const p=document.querySelector(".acct-pop");if(p)p.remove();});
 
+function activateTab(name){
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));
+  document.querySelectorAll(".tab-panel").forEach(p=>p.classList.toggle("active",p.id==="panel-"+name));
+}
+
+// Re-display a previously saved audit without re-running it.
+function loadSavedAudit(a){
+  if(!a||!a.report){showToast("This audit's details weren't saved — re-run it.");return;}
+  running=false;phase="done";
+  currentUrl=a.url;currentMode=a.mode||"both";
+  report=a.report;
+  allIssues=(a.issues||[]).map(i=>Object.assign({},i));
+  siteData=null;staticFindings=[];
+  activeTasks=ALL_TASKS[currentMode]||ALL_TASKS.both;
+
+  document.getElementById("hero").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
+  document.getElementById("fetch-status").style.display="none";
+  document.getElementById("status-url").textContent=a.url;
+  document.getElementById("run-label").textContent=`saved · ${a.date}`;
+  document.getElementById("status-mode-badge").textContent=currentMode.toUpperCase()+" SCAN";
+  setDotColor(document.getElementById("status-dot"),"#9b6dff");
+  const hs=document.getElementById("header-status");hs.classList.remove("hidden");hs.style.display="flex";
+  document.getElementById("header-status-text").textContent=`saved audit — score ${report.overall_score}`;
+  setDotColor(document.getElementById("header-dot"),"#9b6dff");
+  document.getElementById("rescan-btn").classList.remove("hidden");
+
+  renderReport();renderIssues();updateMetrics();
+
+  // rebuild task cards from the saved issues, grouped by category
+  buildTaskGrid();
+  activeTasks.forEach(task=>{
+    const ti=allIssues.filter(i=>i.category===task.label);
+    const sev=ti.some(i=>i.severity==="critical"||i.severity==="high");
+    renderTaskCard(task,{phase:"done",result:{
+      status:ti.length===0?"pass":sev?"fail":"warning",issues:ti,
+      summary:ti.length?`${ti.length} issue(s) — from saved audit`:"No issues recorded"}});
+  });
+
+  document.getElementById("raw-box").innerHTML=`<div style="color:var(--text-dim);text-align:center;padding:40px;line-height:1.6;">Live HTTP data isn't kept for saved audits.<br>Use Rescan to capture fresh raw data.</div>`;
+  document.getElementById("fix-placeholder").style.display="block";
+  document.getElementById("fix-content").classList.add("hidden");
+  document.getElementById("fix-content").innerHTML="";
+
+  document.getElementById("logs-inner").innerHTML="";
+  addLog(`Loaded saved audit — ${a.url}`,"system");
+  addLog(`Audited ${a.date} · score ${report.overall_score}/100 · ${allIssues.length} issues`,"info");
+  addLog("Raw HTTP logs aren't stored for saved audits. Rescan for live data.","data");
+  activateTab("report");
+}
+
 function renderRecentScans(){
   const el=document.getElementById("recent-scans");
   if(!el)return;
-  const scans=getScans();
-  if(!currentUser||scans.length===0){el.classList.add("hidden");el.innerHTML="";return;}
+  const audits=getAudits();
+  if(!currentUser||audits.length===0){el.classList.add("hidden");el.innerHTML="";return;}
   el.classList.remove("hidden");
-  let h=`<div class="rs-title">Your recent scans · saved to your account</div>`;
-  scans.slice(0,8).forEach(s=>{
-    const c=s.score>=80?"#5bdfb0":s.score>=60?"#f5d442":"#ff5b7f";
-    h+=`<div class="rs-item" data-url="${encodeURIComponent(s.url)}" data-mode="${s.mode||"both"}"><span class="rs-url">${s.url}</span><span class="rs-score" style="color:${c};background:${c}18;border:1px solid ${c}35;">${s.score}</span><span class="rs-date">${s.date}</span></div>`;
+  let h=`<div class="rs-title">Your recent audits · ${audits.length} saved · tap to view</div>`;
+  audits.forEach((a,idx)=>{
+    const sc=(a.report&&a.report.overall_score)||0;
+    const c=sc>=80?"#5bdfb0":sc>=60?"#f5d442":"#ff5b7f";
+    let delta="";
+    const older=audits.slice(idx+1).find(o=>o.url===a.url&&o.report);
+    if(older){
+      const d=sc-(older.report.overall_score||0);
+      if(d!==0)delta=`<span class="rs-delta" style="color:${d>0?"#5bdfb0":"#ff5b7f"};">${d>0?"▲":"▼"}${Math.abs(d)}</span>`;
+    }
+    h+=`<div class="rs-item" data-idx="${idx}"><span class="rs-url">${a.url}</span>${delta}<span class="rs-score" style="color:${c};background:${c}18;border:1px solid ${c}35;">${sc}</span><span class="rs-date">${a.date}</span></div>`;
   });
   el.innerHTML=h;
   el.querySelectorAll(".rs-item").forEach(it=>it.addEventListener("click",()=>{
-    const u=decodeURIComponent(it.dataset.url);
-    clearInterval(timerInterval);
-    startScan(u,it.dataset.mode||currentMode);
+    loadSavedAudit(getAudits()[parseInt(it.dataset.idx,10)]);
   }));
 }
+
+function trimText(s,n){s=String(s||"");return s.length>n?s.slice(0,n-1)+"…":s;}
 
 async function saveScan(url,mode){
   if(!currentUser||!report)return;
   try{
-    const entry={url,mode,score:report.overall_score||0,health:report.health||"unknown",
-      issues:allIssues.length,date:new Date().toISOString().slice(0,10)};
-    const next=[entry,...getScans().filter(s=>s.url!==url)].slice(0,20);
-    await updateUserData(Object.assign({},currentUser.user_metadata||{},{scans:next}));
-    addLog(`Scan saved to your account (${next.length} stored)`,"success");
+    const issues=allIssues.slice(0,24).map(i=>({
+      severity:i.severity,title:trimText(i.title,120),category:i.category,source:i.source,
+      description:trimText(i.description,200),reproduction:trimText(i.reproduction,200),fix:trimText(i.fix,200)}));
+    const snap={url,mode,date:new Date().toISOString().slice(0,10),ts:Date.now(),
+      report:{overall_score:report.overall_score,health:report.health,headline:report.headline,
+        top_priority:report.top_priority,next_run_recommendation:report.next_run_recommendation,
+        positive_findings:(report.positive_findings||[]).slice(0,6),engines:report.engines||["AI"]},
+      issues};
+    const next=[snap,...getAudits()].slice(0,10);
+    await updateUserData(Object.assign({},currentUser.user_metadata||{},{audits:next}));
+    addLog(`Audit saved to your account (${next.length} stored)`,"success");
     renderRecentScans();
   }catch(e){
-    addLog("Could not save scan: "+e.message,"warn");
+    addLog("Could not save audit: "+e.message,"warn");
   }
 }
 
