@@ -74,8 +74,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
 
-<!-- Netlify Identity — accounts + per-user storage, no database to run -->
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -363,6 +361,30 @@
   .rs-date{font-size:9px;color:var(--text-dim);flex-shrink:0}
   /* ── Ensemble model badge ── */
   .model-badge{font-size:8px;letter-spacing:.06em;padding:1px 6px;border-radius:4px;border:1px solid;flex-shrink:0}
+  /* ── Custom auth modal (themed — replaces the white Netlify widget) ── */
+  #auth-overlay{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:rgba(3,3,10,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:20px;animation:fadeIn .2s ease}
+  #auth-modal{position:relative;width:100%;max-width:380px;background:linear-gradient(180deg,var(--bg2),var(--bg1));border:1px solid var(--border-hi);border-radius:16px;padding:28px 24px 24px;box-shadow:0 24px 70px rgba(0,0,0,.6),0 0 40px rgba(79,142,247,.08);animation:slideDown .25s ease}
+  #auth-close{position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:7px;background:var(--bg3);border:1px solid var(--border);color:var(--text-second);font-size:12px;cursor:pointer;transition:.15s;line-height:1}
+  #auth-close:hover{color:var(--text-primary);border-color:var(--border-hi)}
+  .auth-brand{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+  .auth-brand-name{font-family:var(--syne);font-weight:800;font-size:13px;background:linear-gradient(90deg,#7eb3ff,#c4a0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .auth-tabs{display:flex;gap:5px;margin-bottom:16px;background:var(--bg0);border:1px solid var(--border);border-radius:9px;padding:4px}
+  .auth-tab{flex:1;padding:8px;border:none;background:none;border-radius:6px;cursor:pointer;font-family:var(--mono);font-size:12px;color:var(--text-dim);transition:.15s}
+  .auth-tab.active{background:linear-gradient(135deg,rgba(79,142,247,.18),rgba(155,109,255,.18));color:var(--text-primary);box-shadow:0 0 12px rgba(79,142,247,.12)}
+  .auth-title{font-family:var(--syne);font-weight:700;font-size:17px;color:var(--text-primary);margin-bottom:6px;letter-spacing:-.01em}
+  .auth-sub{font-size:11px;color:var(--text-second);margin-bottom:14px;line-height:1.5}
+  .auth-input{width:100%;padding:11px 13px;margin-bottom:10px;background:var(--bg3);border:1px solid var(--border-hi);border-radius:8px;color:var(--text-primary);font-family:var(--mono);font-size:12px;transition:.15s}
+  .auth-input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,142,247,.12)}
+  .auth-input::placeholder{color:var(--text-dim)}
+  .auth-submit{width:100%;padding:12px;margin-top:4px;border:none;border-radius:8px;cursor:pointer;font-family:var(--mono);font-size:13px;font-weight:500;color:#fff;background:linear-gradient(135deg,var(--blue),var(--violet));box-shadow:0 4px 16px rgba(79,142,247,.3);transition:.15s}
+  .auth-submit:hover{filter:brightness(1.1)}
+  .auth-submit:disabled{opacity:.55;cursor:default;filter:none}
+  .auth-link{display:block;width:100%;margin-top:12px;background:none;border:none;cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--text-second);transition:.15s}
+  .auth-link:hover{color:var(--blue-light)}
+  .auth-fineprint{margin-top:12px;font-size:9px;color:var(--text-dim);text-align:center;line-height:1.5}
+  .auth-msg{padding:9px 12px;border-radius:7px;font-size:11px;margin-bottom:12px;line-height:1.45}
+  .auth-err{background:rgba(255,91,127,.1);border:1px solid rgba(255,91,127,.3);color:#ff9bb8}
+  .auth-ok{background:rgba(91,223,176,.1);border:1px solid rgba(91,223,176,.3);color:#90e0c0}
   .hidden{display:none !important}
 </style>
 </head>
@@ -494,6 +516,13 @@
   </div>
 </div>
 <div style="height:max(60px,calc(40px + env(safe-area-inset-bottom)));"></div>
+<div id="auth-overlay" class="hidden">
+  <div id="auth-modal" role="dialog" aria-modal="true" aria-label="Account">
+    <button id="auth-close" aria-label="Close">✕</button>
+    <div class="auth-brand"><span style="font-size:14px;">◆</span><span class="auth-brand-name">SHIELDQA</span></div>
+    <div id="auth-body"></div>
+  </div>
+</div>
 <div id="error-toast"></div>
 
 <script>
@@ -1325,11 +1354,15 @@ function showToast(msg){
 }
 
 // ═══════════════════════════════════════════════════════════════
-// AUTH + SAVED SCANS  ·  Netlify Identity (no database to run)
-// Scan history is stored in the signed-in user's Identity profile
-// (user_metadata) — capped to the 20 most recent scans.
+// AUTH + SAVED SCANS  ·  custom UI on the Netlify Identity (GoTrue) API
+// A themed modal talks straight to /.netlify/identity (no widget, no
+// iframe). Scan history lives in user_metadata, capped to 20 scans.
 // ═══════════════════════════════════════════════════════════════
+const IDENTITY_URL="/.netlify/identity";
+const SESSION_KEY="shieldqa_session";
 let currentUser=null;
+let authState="login",authError="",authMessage="",authBusy=false;
+const authValues={email:"",password:""};
 
 function getScans(){
   return (currentUser&&currentUser.user_metadata&&currentUser.user_metadata.scans)||[];
@@ -1344,10 +1377,7 @@ function renderAccount(){
     document.getElementById("acct-toggle").addEventListener("click",e=>{e.stopPropagation();toggleAcctMenu();});
   }else{
     el.innerHTML=`<button class="acct-btn" id="signin-btn">Sign in</button>`;
-    document.getElementById("signin-btn").addEventListener("click",()=>{
-      if(window.netlifyIdentity)window.netlifyIdentity.open();
-      else showToast("Sign-in unavailable — enable Identity on your Netlify site.");
-    });
+    document.getElementById("signin-btn").addEventListener("click",()=>openAuth("login"));
   }
 }
 
@@ -1358,7 +1388,7 @@ function toggleAcctMenu(){
   const n=getScans().length;
   pop.innerHTML=`<div class="acct-pop-head">${n} SAVED SCAN${n===1?"":"S"}</div>`;
   const out=document.createElement("button");out.textContent="↩ Sign out";
-  out.addEventListener("click",()=>{if(window.netlifyIdentity)window.netlifyIdentity.logout();});
+  out.addEventListener("click",()=>identityLogout());
   pop.appendChild(out);
   el.appendChild(pop);
 }
@@ -1389,8 +1419,7 @@ async function saveScan(url,mode){
     const entry={url,mode,score:report.overall_score||0,health:report.health||"unknown",
       issues:allIssues.length,date:new Date().toISOString().slice(0,10)};
     const next=[entry,...getScans().filter(s=>s.url!==url)].slice(0,20);
-    const updated=await currentUser.update({data:Object.assign({},currentUser.user_metadata||{},{scans:next})});
-    currentUser=updated;
+    await updateUserData(Object.assign({},currentUser.user_metadata||{},{scans:next}));
     addLog(`Scan saved to your account (${next.length} stored)`,"success");
     renderRecentScans();
   }catch(e){
@@ -1398,16 +1427,237 @@ async function saveScan(url,mode){
   }
 }
 
-function initIdentity(){
-  const id=window.netlifyIdentity;
-  if(!id){const el=document.getElementById("account");if(el)el.innerHTML="";return;}
-  id.on("init",user=>{currentUser=user||null;renderAccount();renderRecentScans();});
-  id.on("login",user=>{currentUser=user;renderAccount();renderRecentScans();id.close();});
-  id.on("logout",()=>{currentUser=null;renderAccount();renderRecentScans();});
-  id.on("error",()=>showToast("Identity error — check that Identity is enabled in Netlify."));
-  id.init();
+// ── GoTrue REST helpers ──
+async function gotrue(path,{method="GET",body,token,form=false}={}){
+  const headers={};let payload;
+  if(form){headers["Content-Type"]="application/x-www-form-urlencoded";payload=new URLSearchParams(body).toString();}
+  else if(body){headers["Content-Type"]="application/json";payload=JSON.stringify(body);}
+  if(token)headers["Authorization"]="Bearer "+token;
+  let res;
+  try{res=await fetch(IDENTITY_URL+path,{method,headers,body:payload});}
+  catch{throw new Error("Network error reaching the Identity service.");}
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok){
+    if(res.status===404)throw new Error("Identity isn't enabled on this site yet.");
+    throw new Error(data.error_description||data.msg||data.error||`Request failed (${res.status})`);
+  }
+  return data;
 }
-initIdentity();
+
+// ── session storage ──
+function saveSession(tok){
+  const s={access_token:tok.access_token,refresh_token:tok.refresh_token,
+    expires_at:Date.now()+((tok.expires_in||3600)*1000)};
+  try{localStorage.setItem(SESSION_KEY,JSON.stringify(s));}catch{}
+  return s;
+}
+function getSession(){try{return JSON.parse(localStorage.getItem(SESSION_KEY)||"null");}catch{return null;}}
+function clearSession(){try{localStorage.removeItem(SESSION_KEY);}catch{}}
+
+async function getValidToken(){
+  let s=getSession();
+  if(!s||!s.access_token)return null;
+  if(Date.now()<s.expires_at-60000)return s.access_token;
+  if(!s.refresh_token){clearSession();return null;}
+  try{
+    const tok=await gotrue("/token",{method:"POST",form:true,
+      body:{grant_type:"refresh_token",refresh_token:s.refresh_token}});
+    return saveSession(tok).access_token;
+  }catch{clearSession();return null;}
+}
+
+function normalizeUser(u){
+  return{email:u.email,user_metadata:u.user_metadata||{},app_metadata:u.app_metadata||{}};
+}
+async function loadUserFromSession(){
+  const token=await getValidToken();
+  if(!token){currentUser=null;renderAccount();renderRecentScans();return;}
+  try{currentUser=normalizeUser(await gotrue("/user",{token}));}
+  catch{clearSession();currentUser=null;}
+  renderAccount();renderRecentScans();
+}
+
+// ── auth actions ──
+async function identityLogin(email,password){
+  saveSession(await gotrue("/token",{method:"POST",form:true,
+    body:{grant_type:"password",username:email,password}}));
+  await loadUserFromSession();
+}
+async function identitySignup(email,password){
+  return gotrue("/signup",{method:"POST",body:{email,password}});
+}
+async function identityRecover(email){
+  return gotrue("/recover",{method:"POST",body:{email}});
+}
+async function identitySetPassword(password){
+  const token=await getValidToken();
+  if(!token)throw new Error("Session expired — please use the email link again.");
+  currentUser=normalizeUser(await gotrue("/user",{method:"PUT",token,body:{password}}));
+  renderAccount();renderRecentScans();
+}
+async function identityLogout(){
+  const s=getSession();
+  if(s&&s.access_token){try{await gotrue("/logout",{method:"POST",token:s.access_token});}catch{}}
+  clearSession();currentUser=null;
+  renderAccount();renderRecentScans();showToast("Signed out.");
+}
+async function updateUserData(data){
+  const token=await getValidToken();
+  if(!token)throw new Error("Not signed in");
+  currentUser=normalizeUser(await gotrue("/user",{method:"PUT",token,body:{data}}));
+  return currentUser;
+}
+
+// ── themed modal ──
+function openAuth(state){
+  authState=state||"login";authError="";authMessage="";authBusy=false;
+  renderAuthForm();
+  document.getElementById("auth-overlay").classList.remove("hidden");
+}
+function closeAuth(){
+  document.getElementById("auth-overlay").classList.add("hidden");
+  authError="";authMessage="";
+}
+function captureAuthInputs(){
+  const e=document.getElementById("auth-email"),p=document.getElementById("auth-password");
+  if(e)authValues.email=e.value;
+  if(p)authValues.password=p.value;
+}
+function setAuthState(s){captureAuthInputs();authState=s;authError="";authMessage="";renderAuthForm();}
+function setAuthBusy(b){
+  authBusy=b;
+  const btn=document.querySelector("#auth-body .auth-submit");
+  if(btn){btn.disabled=b;
+    if(b){btn.dataset.label=btn.textContent;btn.textContent="Working…";}
+    else if(btn.dataset.label)btn.textContent=btn.dataset.label;}
+}
+
+function renderAuthForm(){
+  const body=document.getElementById("auth-body");
+  if(!body)return;
+  const err=authError?`<div class="auth-msg auth-err">${authError}</div>`:"";
+  const ok=authMessage?`<div class="auth-msg auth-ok">${authMessage}</div>`:"";
+  const ev=authValues.email||"";
+  if(authState==="message"){
+    body.innerHTML=`<div class="auth-title">Almost there</div>${ok}${err}
+      <button class="auth-link" data-act="to-login">← Back to log in</button>`;
+  }else if(authState==="forgot"){
+    body.innerHTML=`<div class="auth-title">Reset your password</div>
+      <p class="auth-sub">Enter your email and we'll send a reset link.</p>${err}${ok}
+      <input class="auth-input" id="auth-email" type="email" placeholder="Email" value="${ev}" autocomplete="email">
+      <button class="auth-submit" data-act="recover">Send reset link</button>
+      <button class="auth-link" data-act="to-login">← Back to log in</button>`;
+  }else if(authState==="recover"||authState==="invite"){
+    body.innerHTML=`<div class="auth-title">${authState==="invite"?"Set your password":"Choose a new password"}</div>
+      <p class="auth-sub">Pick a password to ${authState==="invite"?"activate":"recover"} your account.</p>${err}${ok}
+      <input class="auth-input" id="auth-password" type="password" placeholder="New password" autocomplete="new-password">
+      <button class="auth-submit" data-act="setpw">Save password</button>`;
+  }else{
+    const isLogin=authState!=="signup";
+    body.innerHTML=`
+      <div class="auth-tabs">
+        <button class="auth-tab${isLogin?"":" active"}" data-act="to-signup">Sign up</button>
+        <button class="auth-tab${isLogin?" active":""}" data-act="to-login">Log in</button>
+      </div>${err}${ok}
+      <input class="auth-input" id="auth-email" type="email" placeholder="Email" value="${ev}" autocomplete="email">
+      <input class="auth-input" id="auth-password" type="password" placeholder="Password" autocomplete="${isLogin?"current-password":"new-password"}">
+      <button class="auth-submit" data-act="${isLogin?"login":"signup"}">${isLogin?"Log in":"Create account"}</button>
+      ${isLogin?'<button class="auth-link" data-act="to-forgot">Forgot password?</button>'
+              :'<p class="auth-fineprint">Your scan history will be saved privately to this account.</p>'}`;
+  }
+  body.querySelectorAll("[data-act]").forEach(b=>b.addEventListener("click",()=>authAction(b.dataset.act)));
+  body.querySelectorAll(".auth-input").forEach(i=>i.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){e.preventDefault();const s=body.querySelector(".auth-submit");if(s)s.click();}
+  }));
+}
+
+async function authAction(act){
+  if(act==="to-login"){setAuthState("login");return;}
+  if(act==="to-signup"){setAuthState("signup");return;}
+  if(act==="to-forgot"){setAuthState("forgot");return;}
+  if(authBusy)return;
+  captureAuthInputs();
+  const email=(authValues.email||"").trim(),password=authValues.password||"";
+  authError="";authMessage="";
+  try{
+    if(act==="login"){
+      if(!email||!password)throw new Error("Enter your email and password.");
+      setAuthBusy(true);
+      await identityLogin(email,password);
+      authValues.email="";authValues.password="";closeAuth();showToast("Signed in.");
+    }else if(act==="signup"){
+      if(!email||!password)throw new Error("Enter your email and password.");
+      if(password.length<6)throw new Error("Password must be at least 6 characters.");
+      setAuthBusy(true);
+      const u=await identitySignup(email,password);
+      authValues.password="";
+      if(u&&u.confirmed_at){
+        authMessage="Account created — you can log in now.";authState="login";
+      }else{
+        authMessage="Account created! Check your email for a confirmation link, then log in.";
+        authState="message";
+      }
+      authBusy=false;renderAuthForm();
+    }else if(act==="recover"){
+      if(!email)throw new Error("Enter your email address.");
+      setAuthBusy(true);
+      await identityRecover(email);
+      authMessage="If that email has an account, a reset link is on its way.";
+      authState="message";authBusy=false;renderAuthForm();
+    }else if(act==="setpw"){
+      if(!password||password.length<6)throw new Error("Password must be at least 6 characters.");
+      setAuthBusy(true);
+      await identitySetPassword(password);
+      authValues.password="";closeAuth();showToast("Password saved — you're signed in.");
+    }
+  }catch(e){
+    authError=e.message;authBusy=false;renderAuthForm();
+  }
+}
+
+// ── handle email-link returns (#confirmation_token / #recovery_token / #invite_token) ──
+function clearHash(){
+  try{history.replaceState(null,"",location.pathname+location.search);}
+  catch{location.hash="";}
+}
+async function handleAuthHash(){
+  const h=location.hash||"";
+  const grab=re=>{const m=h.match(re);return m?m[1]:null;};
+  if(h.indexOf("error=")>-1){clearHash();showToast("Authentication link error. Please try again.");return false;}
+  const conf=grab(/confirmation_token=([^&]+)/),
+        rec=grab(/recovery_token=([^&]+)/),
+        inv=grab(/invite_token=([^&]+)/);
+  try{
+    if(conf){
+      saveSession(await gotrue("/verify",{method:"POST",body:{type:"signup",token:conf}}));
+      clearHash();await loadUserFromSession();showToast("Email confirmed — you're signed in.");
+      return true;
+    }
+    if(rec){
+      saveSession(await gotrue("/verify",{method:"POST",body:{type:"recovery",token:rec}}));
+      clearHash();openAuth("recover");return true;
+    }
+    if(inv){
+      saveSession(await gotrue("/verify",{method:"POST",body:{type:"signup",token:inv}}));
+      clearHash();openAuth("invite");return true;
+    }
+  }catch(e){
+    clearHash();showToast("Could not complete that link: "+e.message);
+  }
+  return false;
+}
+
+async function initAuth(){
+  const overlay=document.getElementById("auth-overlay");
+  document.getElementById("auth-close").addEventListener("click",closeAuth);
+  overlay.addEventListener("click",e=>{if(e.target===overlay)closeAuth();});
+  document.addEventListener("keydown",e=>{
+    if(e.key==="Escape"&&!overlay.classList.contains("hidden"))closeAuth();
+  });
+  const handled=await handleAuthHash();
+  if(!handled)await loadUserFromSession();
+}
+initAuth();
 </script>
 </body>
 </html>
