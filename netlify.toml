@@ -20,9 +20,8 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
     # CSP notes:
-    #  - script-src includes identity.netlify.com for the Netlify Identity widget
-    #  - connect-src is 'self' only: the browser talks to /api/claude and
-    #    /.netlify/identity (both same-origin). The Anthropic/OpenAI calls
-    #    happen server-side inside the function, so no external connect-src needed.
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://identity.netlify.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data: https:; frame-ancestors 'none'"
+    #  - all auth runs against /.netlify/identity (same-origin) via fetch,
+    #    so connect-src 'self' covers it — no external script needed.
+    #  - the Anthropic/OpenAI calls happen server-side inside the function.
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data: https:; frame-ancestors 'none'"
  
