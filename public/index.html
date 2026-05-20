@@ -401,6 +401,29 @@
   .auth-msg{padding:9px 12px;border-radius:7px;font-size:11px;margin-bottom:12px;line-height:1.45}
   .auth-err{background:rgba(255,91,127,.1);border:1px solid rgba(255,91,127,.3);color:#ff9bb8}
   .auth-ok{background:rgba(91,223,176,.1);border:1px solid rgba(91,223,176,.3);color:#90e0c0}
+  /* ── Full-page auth gate (shown until signed in) ── */
+  #gate-page{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 20% 0%,rgba(79,142,247,.08),transparent 55%),radial-gradient(circle at 80% 100%,rgba(155,109,255,.08),transparent 55%),var(--bg0);overflow-y:auto}
+  .gate-card{width:100%;max-width:440px;background:linear-gradient(180deg,var(--bg2),var(--bg1));border:1px solid var(--border-hi);border-radius:18px;padding:32px 30px 28px;box-shadow:0 24px 70px rgba(0,0,0,.6),0 0 40px rgba(79,142,247,.06)}
+  .gate-brand{text-align:center;margin-bottom:22px}
+  .gate-name{font-family:var(--syne);font-weight:800;font-size:34px;letter-spacing:-.02em;margin:0;background:linear-gradient(90deg,#7eb3ff,#c4a0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .gate-sub{font-size:11px;color:var(--text-second);margin:6px 0 0;font-family:var(--mono)}
+  .gate-tabs{display:flex;gap:5px;margin-bottom:14px;background:var(--bg0);border:1px solid var(--border);border-radius:10px;padding:4px}
+  .gate-tab{flex:1;padding:9px;border:none;background:none;border-radius:7px;cursor:pointer;font-family:var(--mono);font-size:12px;color:var(--text-dim);transition:.15s}
+  .gate-tab.active{background:linear-gradient(135deg,rgba(79,142,247,.2),rgba(155,109,255,.2));color:var(--text-primary);box-shadow:0 0 12px rgba(79,142,247,.15)}
+  .gate-hint{font-size:9px;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;text-align:center;margin:14px 0 16px}
+  .gate-field{margin-bottom:13px}
+  .gate-label{display:block;font-size:11px;color:var(--text-second);margin-bottom:5px;font-family:var(--mono)}
+  .gate-label .gate-opt{color:var(--text-dim);font-weight:400;margin-left:4px}
+  .gate-input{width:100%;padding:11px 13px;background:var(--bg3);border:1px solid var(--border-hi);border-radius:8px;color:var(--text-primary);font-family:var(--mono);font-size:12px;transition:.15s}
+  .gate-input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,142,247,.12)}
+  .gate-input::placeholder{color:var(--text-dim)}
+  textarea.gate-input{min-height:88px;resize:vertical;font-family:var(--mono);line-height:1.5}
+  .gate-submit{width:100%;padding:13px;margin-top:4px;border:none;border-radius:9px;cursor:pointer;font-family:var(--mono);font-size:13px;font-weight:500;color:#fff;background:linear-gradient(135deg,var(--blue),var(--violet));box-shadow:0 4px 18px rgba(79,142,247,.32);transition:.15s}
+  .gate-submit:hover{filter:brightness(1.1)}
+  .gate-submit:disabled{opacity:.55;cursor:default;filter:none}
+  .gate-link{display:block;width:100%;margin-top:14px;background:none;border:none;cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--text-second);text-align:right;transition:.15s}
+  .gate-link:hover{color:var(--blue-light)}
+  .gate-desc{font-size:11px;color:var(--text-second);line-height:1.55;margin:0 0 14px;text-align:center}
   .hidden{display:none !important}
 </style>
 </head>
@@ -537,6 +560,28 @@
   </div>
 </div>
 <div id="error-toast"></div>
+
+<!-- Full-page auth gate — shown until the user is signed in. -->
+<section id="gate-page">
+  <div class="gate-card">
+    <div class="gate-brand">
+      <h1 class="gate-name">ShieldQA</h1>
+      <p class="gate-sub">AI-powered website audits — every issue, exact fixes.</p>
+    </div>
+    <div class="gate-tabs">
+      <button class="gate-tab active" data-gate-tab="login">Log in</button>
+      <button class="gate-tab" data-gate-tab="request">Request access</button>
+    </div>
+    <div id="gate-content"></div>
+  </div>
+</section>
+
+<!-- Netlify Forms detector — picked up at build time so the JS POST works. -->
+<form name="access-request" data-netlify="true" hidden>
+  <input type="text" name="name" />
+  <input type="email" name="email" />
+  <textarea name="reason"></textarea>
+</form>
 
 <script>
 const ALL_TASKS = {
@@ -1596,6 +1641,9 @@ const SESSION_KEY="shieldqa_session";
 let currentUser=null;
 let pendingScanUrl=null,pendingScanMode="both";
 let identityDisableSignup=false;
+// Full-page gate state
+let gateTab="login",gateBusy=false,gateError="",gateMessage="";
+const gateValues={email:"",password:"",rName:"",rEmail:"",rReason:""};
 let authState="login",authError="",authMessage="",authBusy=false;
 const authValues={email:"",password:"",name:""};
 
@@ -1610,16 +1658,127 @@ function displayName(){
 }
 function renderAccount(){
   const el=document.getElementById("account");
-  if(!el)return;
+  if(el){
+    if(currentUser){
+      const email=currentUser.email||"account";
+      el.innerHTML=`<button class="acct-btn" id="acct-toggle" title="${email}"><span class="acct-dot">◆</span><span class="acct-label">${displayName()}</span></button>`;
+      document.getElementById("acct-toggle").addEventListener("click",e=>{e.stopPropagation();toggleAcctMenu();});
+    }else{
+      el.innerHTML="";  // gate page handles sign-in; header button hidden when logged out
+    }
+  }
+  applyAuthGate();
+}
+
+// ── Full-page auth gate ──────────────────────────────────────────
+function applyAuthGate(){
+  const gate=document.getElementById("gate-page");
+  if(!gate)return;
   if(currentUser){
-    const email=currentUser.email||"account";
-    el.innerHTML=`<button class="acct-btn" id="acct-toggle" title="${email}"><span class="acct-dot">◆</span><span class="acct-label">${displayName()}</span></button>`;
-    document.getElementById("acct-toggle").addEventListener("click",e=>{e.stopPropagation();toggleAcctMenu();});
+    gate.classList.add("hidden");
+    document.body.style.overflow="";
   }else{
-    el.innerHTML=`<button class="acct-btn" id="signin-btn">Sign in</button>`;
-    document.getElementById("signin-btn").addEventListener("click",()=>openAuth("login"));
+    gate.classList.remove("hidden");
+    document.body.style.overflow="hidden";
+    gateError="";gateMessage="";gateBusy=false;
+    renderGate();
   }
 }
+
+function setGateTab(tab){
+  gateTab=tab;gateError="";gateMessage="";
+  document.querySelectorAll(".gate-tab").forEach(b=>b.classList.toggle("active",b.dataset.gateTab===tab));
+  renderGate();
+}
+
+function captureGateInputs(){
+  const m=id=>document.getElementById(id);
+  if(m("gate-email"))gateValues.email=m("gate-email").value;
+  if(m("gate-password"))gateValues.password=m("gate-password").value;
+  if(m("gate-rname"))gateValues.rName=m("gate-rname").value;
+  if(m("gate-remail"))gateValues.rEmail=m("gate-remail").value;
+  if(m("gate-rreason"))gateValues.rReason=m("gate-rreason").value;
+}
+
+function setGateBusy(b){
+  gateBusy=b;
+  const btn=document.querySelector("#gate-content .gate-submit");
+  if(btn){btn.disabled=b;
+    if(b){btn.dataset.label=btn.textContent;btn.textContent="Working…";}
+    else if(btn.dataset.label)btn.textContent=btn.dataset.label;}
+}
+
+function renderGate(){
+  const c=document.getElementById("gate-content");
+  if(!c)return;
+  const err=gateError?`<div class="auth-msg auth-err">${gateError}</div>`:"";
+  const ok=gateMessage?`<div class="auth-msg auth-ok">${gateMessage}</div>`:"";
+  if(gateTab==="login"){
+    c.innerHTML=`<div class="gate-hint">Log in to continue</div>${err}${ok}
+      <div class="gate-field"><label class="gate-label" for="gate-email">Email</label>
+        <input class="gate-input" id="gate-email" type="email" value="${gateValues.email||""}" autocomplete="email"></div>
+      <div class="gate-field"><label class="gate-label" for="gate-password">Password</label>
+        <input class="gate-input" id="gate-password" type="password" autocomplete="current-password"></div>
+      <button class="gate-submit" data-gate-act="login">Log in</button>
+      <button class="gate-link" data-gate-act="forgot">Forgot password?</button>`;
+  }else{
+    c.innerHTML=`<div class="gate-hint">Request access</div>
+      <p class="gate-desc">ShieldQA is invite-only. Send a request and you'll get an invitation by email if approved.</p>${err}${ok}
+      <div class="gate-field"><label class="gate-label" for="gate-rname">Your name</label>
+        <input class="gate-input" id="gate-rname" type="text" placeholder="Jane Doe" value="${gateValues.rName||""}" autocomplete="name"></div>
+      <div class="gate-field"><label class="gate-label" for="gate-remail">Your email</label>
+        <input class="gate-input" id="gate-remail" type="email" placeholder="you@example.com" value="${gateValues.rEmail||""}" autocomplete="email"></div>
+      <div class="gate-field"><label class="gate-label" for="gate-rreason">Why do you need access? <span class="gate-opt">(optional)</span></label>
+        <textarea class="gate-input" id="gate-rreason" placeholder="e.g. I run a SaaS and want to audit my site weekly.">${gateValues.rReason||""}</textarea></div>
+      <button class="gate-submit" data-gate-act="request">Send request</button>`;
+  }
+  c.querySelectorAll("[data-gate-act]").forEach(b=>b.addEventListener("click",()=>gateAction(b.dataset.gateAct)));
+  c.querySelectorAll(".gate-input").forEach(i=>i.addEventListener("keydown",e=>{
+    if(e.key==="Enter"&&i.tagName!=="TEXTAREA"){e.preventDefault();const s=c.querySelector(".gate-submit");if(s)s.click();}
+  }));
+}
+
+async function gateAction(act){
+  if(act==="forgot"){captureGateInputs();openAuth("forgot");return;}
+  if(gateBusy)return;
+  captureGateInputs();
+  gateError="";gateMessage="";
+  try{
+    if(act==="login"){
+      const email=(gateValues.email||"").trim(),password=gateValues.password||"";
+      if(!email||!password)throw new Error("Enter your email and password.");
+      setGateBusy(true);
+      await identityLogin(email,password);
+      gateValues.password="";
+      if(pendingScanUrl){
+        const u=pendingScanUrl,m=pendingScanMode;pendingScanUrl=null;
+        showToast("Signed in — starting your audit.");
+        startScan(u,m);
+      }else showToast("Signed in.");
+    }else if(act==="request"){
+      const name=(gateValues.rName||"").trim();
+      const email=(gateValues.rEmail||"").trim();
+      const reason=(gateValues.rReason||"").trim();
+      if(!name)throw new Error("Please enter your name.");
+      if(!email||!/.+@.+\..+/.test(email))throw new Error("Please enter a valid email.");
+      setGateBusy(true);
+      await submitAccessRequest(name,email,reason);
+      gateValues.rName="";gateValues.rEmail="";gateValues.rReason="";
+      gateMessage="Request received. We'll email you an invitation if approved.";
+      gateBusy=false;renderGate();
+    }
+  }catch(e){
+    gateError=e.message;gateBusy=false;renderGate();
+  }
+}
+
+async function submitAccessRequest(name,email,reason){
+  const body=new URLSearchParams({"form-name":"access-request",name,email,reason:reason||""}).toString();
+  const res=await fetch("/",{method:"POST",
+    headers:{"Content-Type":"application/x-www-form-urlencoded"},body});
+  if(!res.ok)throw new Error("Couldn't send request ("+res.status+"). Please try again later.");
+}
+
 
 function toggleAcctMenu(){
   const el=document.getElementById("account");
@@ -2005,6 +2164,9 @@ async function initAuth(){
   document.addEventListener("keydown",e=>{
     if(e.key==="Escape"&&!overlay.classList.contains("hidden"))closeAuth();
   });
+  // Wire gate tab buttons + render initial gate content immediately
+  document.querySelectorAll(".gate-tab").forEach(b=>b.addEventListener("click",()=>setGateTab(b.dataset.gateTab)));
+  renderGate();
   await loadIdentitySettings();
   const handled=await handleAuthHash();
   if(!handled)await loadUserFromSession();
