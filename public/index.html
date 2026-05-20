@@ -403,7 +403,7 @@
   .auth-ok{background:rgba(91,223,176,.1);border:1px solid rgba(91,223,176,.3);color:#90e0c0}
   /* ── Full-page auth gate (shown until signed in) ── */
   #gate-page{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 20% 0%,rgba(79,142,247,.08),transparent 55%),radial-gradient(circle at 80% 100%,rgba(155,109,255,.08),transparent 55%),var(--bg0);overflow-y:auto}
-  .gate-card{width:100%;max-width:440px;background:linear-gradient(180deg,var(--bg2),var(--bg1));border:1px solid var(--border-hi);border-radius:18px;padding:32px 30px 28px;box-shadow:0 24px 70px rgba(0,0,0,.6),0 0 40px rgba(79,142,247,.06)}
+  .gate-card{width:100%;max-width:440px;background:linear-gradient(180deg,var(--bg2),var(--bg1));border:1px solid var(--border-hi);border-radius:18px;padding:32px 30px;box-shadow:0 24px 70px rgba(0,0,0,.6),0 0 40px rgba(79,142,247,.06)}
   .gate-brand{text-align:center;margin-bottom:22px}
   .gate-name{font-family:var(--syne);font-weight:800;font-size:34px;letter-spacing:-.02em;margin:0;background:linear-gradient(90deg,#7eb3ff,#c4a0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
   .gate-sub{font-size:11px;color:var(--text-second);margin:6px 0 0;font-family:var(--mono)}
@@ -411,14 +411,14 @@
   .gate-tab{flex:1;padding:9px;border:none;background:none;border-radius:7px;cursor:pointer;font-family:var(--mono);font-size:12px;color:var(--text-dim);transition:.15s}
   .gate-tab.active{background:linear-gradient(135deg,rgba(79,142,247,.2),rgba(155,109,255,.2));color:var(--text-primary);box-shadow:0 0 12px rgba(79,142,247,.15)}
   .gate-hint{font-size:9px;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;text-align:center;margin:14px 0 16px}
-  .gate-field{margin-bottom:13px}
+  .gate-field{margin-bottom:14px}
   .gate-label{display:block;font-size:11px;color:var(--text-second);margin-bottom:5px;font-family:var(--mono)}
   .gate-label .gate-opt{color:var(--text-dim);font-weight:400;margin-left:4px}
   .gate-input{width:100%;padding:11px 13px;background:var(--bg3);border:1px solid var(--border-hi);border-radius:8px;color:var(--text-primary);font-family:var(--mono);font-size:12px;transition:.15s}
   .gate-input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,142,247,.12)}
   .gate-input::placeholder{color:var(--text-dim)}
-  textarea.gate-input{min-height:88px;resize:vertical;font-family:var(--mono);line-height:1.5}
-  .gate-submit{width:100%;padding:13px;margin-top:4px;border:none;border-radius:9px;cursor:pointer;font-family:var(--mono);font-size:13px;font-weight:500;color:#fff;background:linear-gradient(135deg,var(--blue),var(--violet));box-shadow:0 4px 18px rgba(79,142,247,.32);transition:.15s}
+  textarea.gate-input{min-height:72px;resize:vertical;font-family:var(--mono);line-height:1.5}
+  .gate-submit{width:100%;padding:12px;margin-top:6px;border:none;border-radius:9px;cursor:pointer;font-family:var(--mono);font-size:13px;font-weight:500;color:#fff;background:linear-gradient(135deg,var(--blue),var(--violet));box-shadow:0 4px 18px rgba(79,142,247,.32);transition:.15s}
   .gate-submit:hover{filter:brightness(1.1)}
   .gate-submit:disabled{opacity:.55;cursor:default;filter:none}
   .gate-link{display:block;width:100%;margin-top:14px;background:none;border:none;cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--text-second);text-align:right;transition:.15s}
@@ -1959,9 +1959,20 @@ async function loadUserFromSession(){
 
 // ── auth actions ──
 async function identityLogin(email,password){
-  saveSession(await gotrue("/token",{method:"POST",form:true,
-    body:{grant_type:"password",username:email,password}}));
-  await loadUserFromSession();
+  // Step 1: exchange credentials for a token
+  const tok=await gotrue("/token",{method:"POST",form:true,
+    body:{grant_type:"password",username:email,password}});
+  saveSession(tok);
+  // Step 2: verify the token actually works by fetching the user.
+  // If this fails we MUST throw — otherwise a 400 here would silently leave the
+  // session cleared while the caller shows a misleading "Signed in" toast.
+  try{
+    currentUser=normalizeUser(await gotrue("/user",{token:tok.access_token}));
+  }catch(e){
+    clearSession();currentUser=null;renderAccount();
+    throw new Error("Couldn't load your account ("+e.message+"). Try signing in again.");
+  }
+  renderAccount();renderRecentScans();
 }
 async function identitySignup(email,password,name){
   const body={email,password};
