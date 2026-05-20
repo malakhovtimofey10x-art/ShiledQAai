@@ -1558,7 +1558,18 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{btn.addEventListener("click"
   btn.classList.add("active");
   document.getElementById("panel-"+btn.dataset.tab).classList.add("active");
 });});
-document.getElementById("run-btn").addEventListener("click",()=>{let v=document.getElementById("url-input").value.trim();if(!v)return;if(!v.startsWith("http"))v="https://"+v;startScan(v,currentMode);});
+document.getElementById("run-btn").addEventListener("click",()=>{
+  let v=document.getElementById("url-input").value.trim();
+  if(!v)return;
+  if(!v.startsWith("http"))v="https://"+v;
+  if(!currentUser){
+    // Invite-only / login-required: queue the requested audit and prompt sign-in
+    pendingScanUrl=v;pendingScanMode=currentMode;
+    openAuth("login");
+    return;
+  }
+  startScan(v,currentMode);
+});
 document.getElementById("url-input").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("run-btn").click();});
 document.getElementById("rescan-btn").addEventListener("click",()=>{startScan(currentUrl,currentMode);});
 document.getElementById("done-btn").addEventListener("click",()=>{running=false;phase="idle";document.getElementById("dashboard").classList.add("hidden");document.getElementById("hero").classList.remove("hidden");document.getElementById("hero").style.animation="fadeIn .4s ease";document.getElementById("header-status").classList.add("hidden");document.getElementById("fetch-status").style.display="none";document.getElementById("url-input").value="";});
@@ -1583,6 +1594,8 @@ function showToast(msg){
 const IDENTITY_URL="/.netlify/identity";
 const SESSION_KEY="shieldqa_session";
 let currentUser=null;
+let pendingScanUrl=null,pendingScanMode="both";
+let identityDisableSignup=false;
 let authState="login",authError="",authMessage="",authBusy=false;
 const authValues={email:"",password:"",name:""};
 
@@ -1770,6 +1783,13 @@ async function getValidToken(){
 function normalizeUser(u){
   return{email:u.email,user_metadata:u.user_metadata||{},app_metadata:u.app_metadata||{}};
 }
+async function loadIdentitySettings(){
+  try{
+    const r=await fetch(IDENTITY_URL+"/settings");
+    if(r.ok){const s=await r.json();identityDisableSignup=!!s.disable_signup;}
+  }catch{/* Identity not enabled or unreachable — leave defaults */}
+}
+
 async function loadUserFromSession(){
   const token=await getValidToken();
   if(!token){currentUser=null;renderAccount();renderRecentScans();return;}
@@ -1867,16 +1887,21 @@ function renderAuthForm(){
   }else{
     const isLogin=authState!=="signup";
     const nv=authValues.name||"";
+    const inviteOnly=identityDisableSignup;
+    // In invite-only mode, hide the Sign-up tab entirely and force the form into login
+    const showLoginForm=isLogin||inviteOnly;
     body.innerHTML=`
-      <div class="auth-tabs">
+      ${inviteOnly?`<div class="auth-title" style="margin-bottom:8px;">Log in</div>
+        <p class="auth-sub" style="margin-bottom:14px;">ShieldQA is invite-only. Have an invite link? Click it from your inbox to set your password.</p>`
+      :`<div class="auth-tabs">
         <button class="auth-tab${isLogin?"":" active"}" data-act="to-signup">Sign up</button>
         <button class="auth-tab${isLogin?" active":""}" data-act="to-login">Log in</button>
-      </div>${err}${ok}
-      ${isLogin?'':`<input class="auth-input" id="auth-name" type="text" placeholder="Name (optional)" value="${nv}" autocomplete="given-name">`}
+      </div>`}${err}${ok}
+      ${showLoginForm?'':`<input class="auth-input" id="auth-name" type="text" placeholder="Name (optional)" value="${nv}" autocomplete="given-name">`}
       <input class="auth-input" id="auth-email" type="email" placeholder="Email" value="${ev}" autocomplete="email">
-      <input class="auth-input" id="auth-password" type="password" placeholder="Password" autocomplete="${isLogin?"current-password":"new-password"}">
-      <button class="auth-submit" data-act="${isLogin?"login":"signup"}">${isLogin?"Log in":"Create account"}</button>
-      ${isLogin?'<button class="auth-link" data-act="to-forgot">Forgot password?</button>'
+      <input class="auth-input" id="auth-password" type="password" placeholder="Password" autocomplete="${showLoginForm?"current-password":"new-password"}">
+      <button class="auth-submit" data-act="${showLoginForm?"login":"signup"}">${showLoginForm?"Log in":"Create account"}</button>
+      ${showLoginForm?'<button class="auth-link" data-act="to-forgot">Forgot password?</button>'
               :'<p class="auth-fineprint">Your scan history will be saved privately to this account.</p>'}`;
   }
   body.querySelectorAll("[data-act]").forEach(b=>b.addEventListener("click",()=>authAction(b.dataset.act)));
@@ -1899,7 +1924,12 @@ async function authAction(act){
       if(!email||!password)throw new Error("Enter your email and password.");
       setAuthBusy(true);
       await identityLogin(email,password);
-      authValues.email="";authValues.password="";closeAuth();showToast("Signed in.");
+      authValues.email="";authValues.password="";closeAuth();
+      if(pendingScanUrl){
+        const u=pendingScanUrl,m=pendingScanMode;pendingScanUrl=null;
+        showToast("Signed in — starting your audit.");
+        startScan(u,m);
+      }else showToast("Signed in.");
     }else if(act==="signup"){
       if(!email||!password)throw new Error("Enter your email and password.");
       if(password.length<6)throw new Error("Password must be at least 6 characters.");
@@ -1975,6 +2005,7 @@ async function initAuth(){
   document.addEventListener("keydown",e=>{
     if(e.key==="Escape"&&!overlay.classList.contains("hidden"))closeAuth();
   });
+  await loadIdentitySettings();
   const handled=await handleAuthHash();
   if(!handled)await loadUserFromSession();
 }
