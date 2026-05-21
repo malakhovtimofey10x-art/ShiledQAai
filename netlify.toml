@@ -1,15 +1,15 @@
 [build]
   publish = "public"
   command = ""
- 
+
 [functions]
   directory = "netlify/functions"
- 
+
 [[redirects]]
   from = "/api/claude"
   to = "/.netlify/functions/claude"
   status = 200
- 
+
 # ── Security headers on all responses ─────────────────────────────────────
 [[headers]]
   for = "/*"
@@ -24,3 +24,20 @@
     #    so connect-src 'self' covers it — no external script needed.
     #  - the Anthropic/OpenAI calls happen server-side inside the function.
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'"
+
+# ── HTML: allow short edge caching with stale-while-revalidate ─────────────
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "public, max-age=60, stale-while-revalidate=3600"
+
+# ── Static assets: cacheable for an hour, Netlify revalidates by ETag ──────
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
