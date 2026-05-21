@@ -242,10 +242,11 @@
 </section>
 
 <!-- Netlify Forms detector — picked up at build time so the JS POST works. -->
-<form name="access-request" method="POST" action="/" data-netlify="true" hidden>
-  <input type="text" name="name" />
-  <input type="email" name="email" />
-  <textarea name="reason"></textarea>
+<form name="access-request" method="POST" action="/" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <p hidden><label>Don't fill this out: <input name="bot-field" autocomplete="off" /></label></p>
+  <input type="text" name="name" autocomplete="name" />
+  <input type="email" name="email" autocomplete="email" />
+  <textarea name="reason" autocomplete="off"></textarea>
 </form>
 
 <script src="/app.js"></script>
