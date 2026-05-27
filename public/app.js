@@ -1640,18 +1640,29 @@ async function handleAuthHash(){
         inv=grab(/invite_token=([^&]+)/)||grab(/invitation_token=([^&]+)/);
   try{
     if(conf){
-      saveSession(await gotrue("/verify",{method:"POST",body:{type:"signup",token:conf}}));
-      clearHash();await loadUserFromSession();showToast("Email confirmed — you're signed in.");
-      return true;
+      try{
+        saveSession(await gotrue("/verify",{method:"POST",body:{type:"signup",token:conf}}));
+        clearHash();await loadUserFromSession();showToast("Email confirmed — you're signed in.");
+        return true;
+      }catch(e){
+        // Netlify uses confirmation_token in the URL for BOTH email confirmations and
+        // invitations. GoTrue distinguishes them server-side: if the user was invited
+        // (has invited_at but no password), /verify rejects with "Invited users must
+        // specify a password". Recover by treating the token as an invite — stash it
+        // and prompt for a password instead of toasting an error.
+        if(/specify a password|password.{0,8}required/i.test(e.message)){
+          pendingInviteToken=conf;
+          clearHash();openAuth("invite");return true;
+        }
+        throw e;
+      }
     }
     if(rec){
       saveSession(await gotrue("/verify",{method:"POST",body:{type:"recovery",token:rec}}));
       clearHash();openAuth("recover");return true;
     }
     if(inv){
-      // DO NOT call /verify here — invited users have no password yet, so GoTrue
-      // returns 422 unless token + password arrive together. We stash the token
-      // and complete the verify inside identitySetPassword when the user submits.
+      // Explicit invite_token in URL — stash, prompt for password, verify on submit.
       pendingInviteToken=inv;
       clearHash();openAuth("invite");return true;
     }
