@@ -1055,6 +1055,9 @@ const SESSION_KEY="shieldqa_session";
 let currentUser=null;
 let pendingScanUrl=null,pendingScanMode="both";
 let identityDisableSignup=false;
+// Invite tokens require token + password in a single /verify call (GoTrue requirement).
+// We stash the token here until the user submits their new password.
+let pendingInviteToken=null;
 // Full-page gate state
 let gateTab="login",gateBusy=false,gateError="",gateMessage="";
 const gateValues={email:"",password:"",rName:"",rEmail:"",rReason:""};
@@ -1456,6 +1459,18 @@ async function identityRecover(email){
   return gotrue("/recover",{method:"POST",body:{email}});
 }
 async function identitySetPassword(password){
+  // Invite acceptance: token + password go to /verify together. GoTrue creates
+  // the session in the response.
+  if(pendingInviteToken){
+    const tok=pendingInviteToken;
+    pendingInviteToken=null;
+    saveSession(await gotrue("/verify",{method:"POST",
+      body:{type:"signup",token:tok,password}}));
+    await loadUserFromSession();
+    return;
+  }
+  // Recovery flow: page load already exchanged the recovery token for a session;
+  // we just update the password on that session.
   const token=await getValidToken();
   if(!token)throw new Error("Session expired — please use the email link again.");
   currentUser=normalizeUser(await gotrue("/user",{method:"PUT",token,body:{password}}));
@@ -1622,7 +1637,7 @@ async function handleAuthHash(){
   if(h.indexOf("error=")>-1){clearHash();showToast("Authentication link error. Please try again.");return false;}
   const conf=grab(/confirmation_token=([^&]+)/),
         rec=grab(/recovery_token=([^&]+)/),
-        inv=grab(/invite_token=([^&]+)/);
+        inv=grab(/invite_token=([^&]+)/)||grab(/invitation_token=([^&]+)/);
   try{
     if(conf){
       saveSession(await gotrue("/verify",{method:"POST",body:{type:"signup",token:conf}}));
@@ -1634,7 +1649,10 @@ async function handleAuthHash(){
       clearHash();openAuth("recover");return true;
     }
     if(inv){
-      saveSession(await gotrue("/verify",{method:"POST",body:{type:"signup",token:inv}}));
+      // DO NOT call /verify here — invited users have no password yet, so GoTrue
+      // returns 422 unless token + password arrive together. We stash the token
+      // and complete the verify inside identitySetPassword when the user submits.
+      pendingInviteToken=inv;
       clearHash();openAuth("invite");return true;
     }
   }catch(e){
