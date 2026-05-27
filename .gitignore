@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Local environment files (NEVER commit these — secrets live in Netlify dashboard)
+.env
+.env.local
+.env.*.local
+
+# Netlify CLI artifacts
+.netlify/
+
+# Build/test output
+dist/
+build/
+coverage/
+*.log
+
+# Editor/OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
