@@ -1640,17 +1640,21 @@ async function handleAuthHash(){
         inv=grab(/invite_token=([^&]+)/)||grab(/invitation_token=([^&]+)/);
   try{
     if(conf){
+      // In invite-only mode, every token Netlify sends via #confirmation_token is
+      // an invitation token — there are no signups to confirm. Skip /verify and
+      // route directly to the password modal. (loadIdentitySettings ran first.)
+      if(identityDisableSignup){
+        pendingInviteToken=conf;
+        clearHash();openAuth("invite");return true;
+      }
+      // Open-signup mode: try normal confirmation; fall back to invite if the
+      // token turns out to belong to an invited user.
       try{
         saveSession(await gotrue("/verify",{method:"POST",body:{type:"signup",token:conf}}));
         clearHash();await loadUserFromSession();showToast("Email confirmed — you're signed in.");
         return true;
       }catch(e){
-        // Netlify uses confirmation_token in the URL for BOTH email confirmations and
-        // invitations. GoTrue distinguishes them server-side: if the user was invited
-        // (has invited_at but no password), /verify rejects with "Invited users must
-        // specify a password". Recover by treating the token as an invite — stash it
-        // and prompt for a password instead of toasting an error.
-        if(/specify a password|password.{0,8}required/i.test(e.message)){
+        if(/password|invit/i.test(e.message)){
           pendingInviteToken=conf;
           clearHash();openAuth("invite");return true;
         }
